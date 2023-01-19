@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node code/_bin/www.mjs"
+    "start": "nodemon code/_bin/www.mjs"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
@@ -13,7 +13,8 @@
     "jwt-simple": "^0.5.6",
     "express-openapi-validator": "^5.0.1",
     "swagger-ui-express": "^4.6.0",
-    "swagger-jsdoc": "^6.2.8"
+    "swagger-jsdoc": "^6.2.8",
+    "nodemon": "2.0.20"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
