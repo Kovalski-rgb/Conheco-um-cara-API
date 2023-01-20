@@ -1,7 +1,6 @@
 let users = [
-    {id: 1, login:'admin', password: 'admin', admin: true},
-    {id: 2, login:'vinicius', password: 'vinicius', admin: false},
-    {id: 3, login:'guest', password: 'guest', admin: true}
+    {id: 1, name:'admin', email:'admin@email.com', password: '00#ADmin', admin: true},
+    {id: 2, name:'guest', email:'guest@email.com', password: '00#GUest', admin: false}
 ];
 
 function formatUser(user) {
@@ -13,10 +12,10 @@ export async function loadById(id) {
     return formatUser(users.find(u => u.id === id));
 }
 
-export async function loadByCredentials(username, password) {
+export async function loadByCredentials(email, password) {
     return formatUser(
         users.find(u => 
-            u.login === username && 
+            u.email === email && 
             u.password === password
         )
     );
