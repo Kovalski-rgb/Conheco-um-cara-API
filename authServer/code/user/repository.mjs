@@ -1,7 +1,9 @@
 let users = [
-    {id: 1, name:'admin', email:'admin@email.com', password: '00#ADmin', admin: true},
-    {id: 2, name:'guest', email:'guest@email.com', password: '00#GUest', admin: false}
+    {id: 1, name:'admin', email:'admin@email.com', password: '00#ADmin', telephone: '', admin: true},
+    {id: 2, name:'guest', email:'guest@email.com', password: '00#GUest', telephone: '', admin: false}
 ];
+
+let idCount = 2;
 
 function formatUser(user) {
     if (!user) return user;    
@@ -19,4 +21,19 @@ export async function loadByCredentials(email, password) {
             u.password === password
         )
     );
+}
+
+export async function findEmail(email){
+    return users.find(u=>u.email === email); 
+}
+
+export async function registerNewUser({name, email, password}){
+    if(await findEmail(email)){
+        return null;
+    }
+    idCount++;
+    const newUser = {id: idCount, name, email, password, telephone:'', admin:false};
+    users.push(newUser);
+    console.log(users);
+    return newUser;
 }
