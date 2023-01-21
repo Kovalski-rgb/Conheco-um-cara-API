@@ -1,4 +1,4 @@
-import { getUser, login, registerUser } from "./service.mjs";
+import { getUser, login, registerUser, updateUser } from "./service.mjs";
 
 /**
  * @openapi
@@ -125,4 +125,37 @@ export async function dev_info(req, res, _){
       "github": "https://github.com/fborman"
     }
   ]);
+}
+
+/**
+ * @openapi
+ * /users/me:
+ *   put:
+ *     summary: "Updates user data"
+ * 
+ *     tags:
+ *       - "Profile"
+ * 
+ *     operationId: user_update
+ *     x-eov-operation-handler: router
+ * 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UserInfo" 
+ * 
+ *     responses:
+ *       200:
+ *         description: Update sucesfully
+ *
+ *       500:
+ *         description: Some errors happend.
+ *
+ */
+
+export async function user_update(req, res, _) {
+  const userData = await updateUser(req.body);
+  return userData ? res.sendStatus(200) : res.sendStatus(500);
 }
