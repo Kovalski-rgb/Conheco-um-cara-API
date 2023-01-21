@@ -13,3 +13,8 @@ export async function login({username, password}) {
 export async function getUser(id) {
     return loadById(id);
 }
+
+export async function updateUserData({username, password}) {
+
+    return null;
+}

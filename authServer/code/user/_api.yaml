@@ -3,6 +3,8 @@ tags:
     description: Authentication routes
   - name: profile
     description: User profile information
+  - name: updateProfile
+    description: New user data
 
 components:
   schemas:

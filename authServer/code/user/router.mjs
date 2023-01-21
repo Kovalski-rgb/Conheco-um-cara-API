@@ -59,3 +59,39 @@ export async function get_user(req, res, _) {
   const user = await getUser(parseInt(req.params.id));
   return user ? res.json(user) : res.sendStatus(404);  
 }
+
+
+/**
+ * @openapi
+ * /users/me:
+ *   put:
+ *     summary: "Updates user by id"
+ * 
+ *     tags:
+ *       - "updateProfile"
+ * 
+ *     parameters:
+ *       - $ref: "#/components/parameters/Id"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: "#/components/schemas/UsernamePassword" 
+ * 
+ *     responses:
+ *       200:
+ *         decsription: The data was updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/updateUser'
+ *       500:
+ *         description: Some errors happend.
+ *
+ */
+ 
+export async function update_user(req, res, _) {  
+  const user = await putUser(parseInt(req.params.id));
+  return user ? res.json(user) : res.sendStatus(500);
+}

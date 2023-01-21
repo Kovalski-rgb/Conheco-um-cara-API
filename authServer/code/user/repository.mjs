@@ -21,3 +21,8 @@ export async function loadByCredentials(username, password) {
         )
     );
 }
+
+export async function updateUserData(newUsername, newUserPassword,par3) {
+    return u.login = newUsername;
+}
+
