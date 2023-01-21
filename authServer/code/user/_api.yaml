@@ -1,8 +1,10 @@
 tags:
   - name: Authentication
     description: Authentication routes
-  - name: profile
+  - name: Profile
     description: User profile information
+  - name: Misc
+    description: Extra routes
 
 components:
   schemas:

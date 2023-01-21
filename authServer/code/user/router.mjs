@@ -7,7 +7,7 @@ import { getUser, login, registerUser } from "./service.mjs";
  *     summary: "Logs in the user"
  * 
  *     tags:
- *       - "auth"
+ *       - "Authentication"
  *     
  *     operationId: user_login
  *     x-eov-operation-handler: router
@@ -40,7 +40,7 @@ export async function user_login(req, res, _) {
  *     summary: "Retrieves user information"
  * 
  *     tags:
- *       - "profile"
+ *       - "Profile"
  * 
  *     parameters:
  *       - $ref: "#/components/parameters/Id"
@@ -66,7 +66,7 @@ export async function get_user(req, res, _) {
  *     summary: "Creates a new user"
  * 
  *     tags:
- *       - "profile"
+ *       - "Profile"
  *     
  *     operationId: user_register
  *     x-eov-operation-handler: router
@@ -90,4 +90,39 @@ export async function get_user(req, res, _) {
 export async function user_register(req, res, _) {
   const user = await registerUser(req.body);
   return user ? res.sendStatus(200) : res.sendStatus(401);
+}
+
+/**
+ * @openapi
+ * /info:
+ * 
+ *  get:
+ *    summary:
+ *      retrieves developer information
+ * 
+ *    tags:
+ *      - "Misc"
+ * 
+ *    operationId: dev_info
+ *    x-eov-operation-handler: router
+ * 
+ *    responses:
+ *      '200':
+ *        description: "Developer info retrieved sucesfully"
+ */
+export async function dev_info(req, res, _){
+  return res.json([
+    {
+      "name": "André Luiz Kovalski",
+      "github": "https://github.com/Kovalski-rgb"
+    },
+    {
+      "name": "Carlos Mareo Suzuki",
+      "github": "https://github.com/carlosuzuki"
+    },
+    {
+      "name": "Fernando Andrey Borman",
+      "github": "https://github.com/fborman"
+    }
+  ]);
 }
