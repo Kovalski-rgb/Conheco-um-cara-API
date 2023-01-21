@@ -55,7 +55,39 @@ export async function user_login(req, res, _) {
  *       '404':
  *         description: "User not found"
  */
+
+
+
 export async function get_user(req, res, _) {  
   const user = await getUser(parseInt(req.params.id));
   return user ? res.json(user) : res.sendStatus(404);  
 }
+
+/**
+ * @openapi
+ * 
+ * /users/{id}:
+ *   delete:
+ *     summary: "Retrieves user information"
+ * 
+ *     tags:
+ *       - "profile"
+ * 
+ *     parameters:
+ *       - $ref: "#/components/parameters/Id"
+ * 
+ *     operationId: delete_user
+ *     x-eov-operation-handler: router
+ * 
+ *     responses:
+ *       '200':
+ *         description: "delete the user"
+ *       '404':
+ *         description: "User not found"
+ */
+
+
+export async function delete_user(req,res,_) 
+const user_delete = async id => {
+  await Mentions.findByIdAndDelete(id);
+};

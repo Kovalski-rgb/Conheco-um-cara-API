@@ -1,4 +1,6 @@
 tags:
+  - name: delete
+    description: delete user
   - name: auth
     description: Authentication routes
   - name: profile
