@@ -1,5 +1,3 @@
-import { request } from "express";
-
 let users = [
     {id: 1, name:'admin', email:'admin@email.com', password: '00#ADmin', telephone: '', admin: true},
     {id: 2, name:'guest', email:'guest@email.com', password: '00#GUest', telephone: '', admin: false}
@@ -40,15 +38,14 @@ export async function registerNewUser({name, email, password}){
     return newUser;
 }
 
-export async function updateUserData({name, email, password, telephone}){
-    const index = users.findIndex(u => u.email === email)
+export async function updateUserData({id, name, email, password, telephone}){
+    const index = users.findIndex(u => u.id === id)
 
     users[index].name = name
+    users[index].email = email
     users[index].password = password
     users[index].telephone = telephone
 
     console.log(users[index]);
     return {name, email, password, telephone}
 }
-
-//todo: export async function updateUserRole

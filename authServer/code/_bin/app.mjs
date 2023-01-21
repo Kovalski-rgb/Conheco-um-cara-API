@@ -9,9 +9,12 @@ import OpenApiValidator from 'express-openapi-validator';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import resolver from './esmresolver.mjs';
+import { JWT_SECURITY } from '../jwt.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
+
+const BASE_PATH = `${__dirname}/../components`;
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -32,8 +35,8 @@ const swaggerOptions = {
         }]
     },
     apis: [
-        __dirname + "/../user/**/*.yaml",
-        __dirname + "/../user/**/*.mjs"
+        `${BASE_PATH}/**/*.yaml`,
+        `${BASE_PATH}/**/*.mjs`
     ]
 };
 
@@ -44,8 +47,13 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use(OpenApiValidator.middleware({
     apiSpec: swaggerDocs,
+    validateSecurity: {
+        handlers: {
+            JWT: JWT_SECURITY
+        }
+    },
     operationHandlers: {
-        basePath: __dirname + "/../user",
+        basePath: BASE_PATH,
         resolver
     }
 }));

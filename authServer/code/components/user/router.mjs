@@ -10,7 +10,7 @@ import { getUser, login, registerUser, updateUser } from "./service.mjs";
  *       - "Authentication"
  *     
  *     operationId: user_login
- *     x-eov-operation-handler: router
+ *     x-eov-operation-handler: user/router
  * 
  *     requestBody:
  *       description: Login information
@@ -46,7 +46,7 @@ export async function user_login(req, res, _) {
  *       - $ref: "#/components/parameters/Id"
  * 
  *     operationId: get_user
- *     x-eov-operation-handler: router
+ *     x-eov-operation-handler: user/router
  * 
  *     responses:
  *       '200':
@@ -61,6 +61,38 @@ export async function get_user(req, res, _) {
 
 /**
  * @openapi
+ * /users/me:
+ *  get:
+ *    summary: "Gets currently logged user"
+ *  
+ *    tags:
+ *      - "Profile"
+ *  
+ *    operationId: get_current_user
+ *    x-eov-operation-handler: user/router
+ *  
+ *    responses:
+ *      '200':
+ *        description: "New user registered sucesfully"
+ *      '400':
+ *        description: "Invalid data provided"
+ *      '401':
+ *        description: "Registration failed"
+ * 
+ *    security:
+ *      - {}
+ *      - JWT: ['USER']
+ */
+export async function get_current_user(req, res, _){
+  if(!req.user){
+    return res.send("Guest user");
+  }
+  const user = await getUser(parseInt(req.user.id));
+  return user ? res.json(user) : res.sendStatus(404); 
+}
+
+/**
+ * @openapi
  * /users:
  *   post:
  *     summary: "Creates a new user"
@@ -69,7 +101,7 @@ export async function get_user(req, res, _) {
  *       - "Profile"
  *     
  *     operationId: user_register
- *     x-eov-operation-handler: router
+ *     x-eov-operation-handler: user/router
  * 
  *     requestBody:
  *       description: New user information
@@ -97,14 +129,13 @@ export async function user_register(req, res, _) {
  * /info:
  * 
  *  get:
- *    summary:
- *      retrieves developer information
+ *    summary: Retrieves Developer Information
  * 
  *    tags:
  *      - "Misc"
  * 
  *    operationId: dev_info
- *    x-eov-operation-handler: router
+ *    x-eov-operation-handler: user/router
  * 
  *    responses:
  *      '200':
@@ -130,32 +161,37 @@ export async function dev_info(req, res, _){
 /**
  * @openapi
  * /users/me:
- *   put:
- *     summary: "Updates user data"
- * 
- *     tags:
- *       - "Profile"
- * 
- *     operationId: user_update
- *     x-eov-operation-handler: router
- * 
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: "#/components/schemas/UserInfo" 
- * 
- *     responses:
- *       200:
- *         description: Update sucesfully
+ *  put:
+ *    summary: "Updates user data"
  *
- *       500:
- *         description: Some errors happend.
+ *    tags:
+ *      - "Profile"
  *
+ *    operationId: user_update
+ *    x-eov-operation-handler: user/router
+ *
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: "#/components/schemas/UserInfo" 
+ *
+ *    responses:
+ *      200:
+ *        description: Update sucesfully
+ *      401:
+ *        description: Unauthorized put request
+ *      500:
+ *        description: Some errors happend.
+ *
+ *    security:
+ *      - JWT: ['USER']
  */
 
 export async function user_update(req, res, _) {
+  if(!req.user){ res.sendStatus(401); }
+  req.body.id = req.user.id;
   const userData = await updateUser(req.body);
   return userData ? res.sendStatus(200) : res.sendStatus(500);
 }

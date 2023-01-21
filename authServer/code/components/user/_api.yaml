@@ -5,10 +5,6 @@ tags:
     description: User profile information
   - name: Misc
     description: Extra routes
-  - name: User data update
-    description: User data update routes
-
-
 
 components:
   schemas:
@@ -54,13 +50,7 @@ components:
           type: string
           minLength: 2
           example: newGuest
-        
-    Id:
-      type: integer
-      format: int32
-      minimum: 1
-      example: 150
-    
+
     UserInfo:
       type: object
       required:
@@ -88,7 +78,13 @@ components:
         telephone:
           type: string
           minLength: 8
-          example: (41) 99900-9900   
+          example: (41) 99900-9900 
+
+    Id:
+      type: integer
+      format: int32
+      minimum: 1
+      example: 150
 
   parameters:
     Id:
@@ -99,10 +95,8 @@ components:
       schema:
         $ref: '#/components/schemas/Id'
 
-    UserInfo:
-      in: path
-      name: User info
-      description: Allow updates just own user data
-      required: true
-      schema:
-        $ref: '#/components/schemas/UserInfo'
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

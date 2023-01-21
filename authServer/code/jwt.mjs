@@ -1,10 +1,11 @@
 import jwt from 'jwt-simple'
 
-const SECRET = "senha ultra secreta";
-const ISSUER = "music server";
-
-function clockTimestamp(date = new Date()) {
+function dateToSec(date = new Date()) {
     return Math.floor(date.getTime() / 1000);
+}
+
+function secToDate(s){
+    return new Date(s * 1000);
 }
 
 export function createToken(user) {
@@ -13,15 +14,91 @@ export function createToken(user) {
     exp.setDate(exp.getDate() + DAYS);
 
     const payload = {
-        iss: ISSUER,
-        iat: clockTimestamp(),
-        exp: clockTimestamp(exp),
+        iss: process.env.ISSUER,
+        iat: dateToSec(),
+        exp: dateToSec(exp),
         sub: user.id,
         user: {
             id: user.id,
-            login: user.login,
-            admin: user.admin
+            name: user.name,
+            email: user.email,
+            roles: user.admin ? ['ADMIN', 'USER'] : ['USER']
         }
     }
-    return jwt.encode(payload, SECRET);
+    return jwt.encode(payload, process.env.TOKEN_SECRET);
+}
+
+function hasAnyRole(user, roles = []){
+    if(roles.size === 0)
+        return true;
+    if(!user || !user.roles) 
+        return false;
+    return user.roles.some(r=>roles.includes(r));
+}
+
+function expandClaims(token) {
+    const coersed = {...token};
+    if (token.sub) {
+        coersed.subject = token.sub;
+        delete coersed.sub;
+    }
+    if (token.iss) {
+        coersed.issuer = token.iss;
+        delete coersed.iss;
+    }
+    if (coersed.exp) {
+        coersed.expiration = secToDate(token.exp);
+        delete coersed.exp;
+    }
+    if (coersed.iat) {
+        coersed.issuedAt = secToDate(token.iat);
+        delete coersed.iat;
+    }
+    if (coersed.aud) {
+        coersed.audience = token.aud;
+        delete coersed.aud;
+    }
+    if (coersed.nbf) {
+        coersed.notBefore = secToDate(token.nbf);
+        delete coersed.nbf;
+    }
+    if (coersed.jti) {
+        coersed.jwtId = coersed.jti;
+        delete coersed.jti;
+    }
+    return coersed;
+}
+
+export function decode(bearerString, noVerify = false){
+    if(!bearerString) 
+        return {};
+    return expandClaims(jwt.decode(bearerString.replace("Bearer ", ""), process.env.TOKEN_SECRET, noVerify));
+}
+
+export function JWT_SECURITY(req, scopes=[]){
+    if(scopes.size === 0){
+        scopes.push('USER');
+    }
+
+    const token = decode(req.header("Authorization"));
+
+    if(!token.user || token.issuer !== process.env.ISSUER){
+        throw {
+            status: 401, 
+            message: 'Unauthorized'
+        };
+    }
+    
+    if(!hasAnyRole(token.user, scopes)){
+        throw {
+            status: 401, 
+            message: 'Unauthorized' +
+            process.env.NODE_ENV !== 'Production' ? 
+                `. Roles: [${token.user.roles}] Needed: [${scopes}]` :''
+        };
+    }
+
+    req.token = token;
+    req.user = token.user;
+    return true;
 }

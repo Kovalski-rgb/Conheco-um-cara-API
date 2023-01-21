@@ -1,5 +1,5 @@
-import { createToken } from "../jwt.mjs";
-import { loadByCredentials, loadById, registerNewUser,updateUserData } from "./repository.mjs";
+import { createToken } from "../../jwt.mjs";
+import { loadByCredentials, loadById, registerNewUser, updateUserData } from "./repository.mjs";
 
 export async function login({email, password}) {
     const user = await loadByCredentials(email, password);
@@ -18,8 +18,6 @@ export async function registerUser({name, email, password}){
     return await registerNewUser({name, email, password});
 }
 
-export async function updateUser({name, email, password, telephone}){
-    return await updateUserData({name, email, password, telephone});
+export async function updateUser({id, name, email, password, telephone}){
+    return await updateUserData({id, name, email, password, telephone});
 }
-
-//todo: export async function roleUser
