@@ -64,3 +64,9 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Id'
+
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

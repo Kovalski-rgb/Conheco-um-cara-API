@@ -10,7 +10,7 @@ import { getUser, login, registerUser } from "./service.mjs";
  *       - "Authentication"
  *     
  *     operationId: user_login
- *     x-eov-operation-handler: router
+ *     x-eov-operation-handler: user/router
  * 
  *     requestBody:
  *       description: Login information
@@ -46,7 +46,7 @@ export async function user_login(req, res, _) {
  *       - $ref: "#/components/parameters/Id"
  * 
  *     operationId: get_user
- *     x-eov-operation-handler: router
+ *     x-eov-operation-handler: user/router
  * 
  *     responses:
  *       '200':
@@ -69,7 +69,7 @@ export async function get_user(req, res, _) {
  *       - "Profile"
  *     
  *     operationId: user_register
- *     x-eov-operation-handler: router
+ *     x-eov-operation-handler: user/router
  * 
  *     requestBody:
  *       description: New user information
@@ -94,6 +94,38 @@ export async function user_register(req, res, _) {
 
 /**
  * @openapi
+ * /users/me:
+ *  get:
+ *    summary: "Gets currently logged user"
+ *  
+ *    tags:
+ *      - "Profile"
+ *  
+ *    operationId: get_current_user
+ *    x-eov-operation-handler: user/router
+ *  
+ *    responses:
+ *      '200':
+ *        description: "New user registered sucesfully"
+ *      '400':
+ *        description: "Invalid data provided"
+ *      '401':
+ *        description: "Registration failed"
+ * 
+ *    security:
+ *      - {}
+ *      - JWT: ['USER']
+ */
+export async function get_current_user(req, res, _){
+  if(!req.user){
+    return res.send("Guest user");
+  }
+  const user = await getUser(parseInt(req.user.id));
+  return user ? res.json(user) : res.sendStatus(404); 
+}
+
+/**
+ * @openapi
  * /info:
  * 
  *  get:
@@ -104,7 +136,7 @@ export async function user_register(req, res, _) {
  *      - "Misc"
  * 
  *    operationId: dev_info
- *    x-eov-operation-handler: router
+ *    x-eov-operation-handler: user/router
  * 
  *    responses:
  *      '200':

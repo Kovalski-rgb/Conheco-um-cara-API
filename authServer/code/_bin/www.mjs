@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+import './dotenvsetup.mjs';
 import app from './app.mjs';
 
 import Debug from 'debug'
