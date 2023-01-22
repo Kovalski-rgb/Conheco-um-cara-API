@@ -49,3 +49,20 @@ export async function updateUserData({id, name, email, password, telephone}){
     console.log(users[index]);
     return {name, email, password, telephone}
 }
+
+export async function removeOwnUser(id) {
+    const index = users.findIndex(u => u.id === id)
+    users.splice(index, 1);
+    console.log(users);
+    return users;
+  }
+
+export async function removeUserById(id) {
+    users.splice(id, 1); //todo: Verificar a utilização com pop
+    console.log(users);
+    return users;
+  }
+  
+
+
+

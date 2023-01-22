@@ -1,4 +1,4 @@
-import { getUser, login, registerUser, updateUser } from "./service.mjs";
+import { getUser, login, registerUser, updateUser, deleteOwnUser, deleteUser } from "./service.mjs";
 
 /**
  * @openapi
@@ -188,10 +188,75 @@ export async function dev_info(req, res, _){
  *    security:
  *      - JWT: ['USER']
  */
-
 export async function user_update(req, res, _) {
   if(!req.user){ res.sendStatus(401); }
   req.body.id = req.user.id;
   const userData = await updateUser(req.body);
   return userData ? res.sendStatus(200) : res.sendStatus(500);
 }
+
+/**
+ * @openapi
+ * /users/me:
+ *  delete:
+ *    summary: "Delete own user data"
+ *
+ *    tags:
+ *      - "Profile"
+ * 
+ *    operationId: delete_current_user
+ *    x-eov-operation-handler: user/router
+ *
+ *    responses:
+ *      200:
+ *        description: data is delete
+ *      401:
+ *        description: Unauthorized put request
+ *      500:
+ *        description: Some errors happend.
+ *
+ *    security:
+ *      - JWT: ['USER']
+ */
+
+export async function delete_current_user(req, res, _) {
+  if(!req.user){ res.sendStatus(401); }
+  const userDataDelete = await deleteOwnUser(req.user.id);
+  return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
+}
+
+/**
+ * @openapi
+ * /users/del/{id}:
+ *  delete:
+ *    summary: "Delete user by id. Admin user feat."
+ *
+ *    tags:
+ *      - "Profile"
+ * 
+ *    parameters:
+ *      - $ref: "#/components/parameters/Id"
+ * 
+ *    operationId: delete_user
+ *    x-eov-operation-handler: user/router
+ *
+ *    responses:
+ *      200:
+ *        description: data is delete
+ *      401:
+ *        description: Unauthorized put request
+ *      500:
+ *        description: Some errors happend.
+ *
+ *    security:
+ *      - JWT: ['ADMIN']
+ */
+
+export async function delete_user(req, res, _){ //delete by id. Just admin feature.
+  if(!req.user){ res.sendStatus(401); }
+  req.body.id = req.user.id;
+  const userDataDelete = await deleteUser(req.body);
+  return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
+}
+
+//COMO COLOCA SEGURANÇA ADM?
