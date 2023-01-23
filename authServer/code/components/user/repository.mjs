@@ -34,7 +34,6 @@ export async function registerNewUser({name, email, password}){
     idCount++;
     const newUser = {id: idCount, name, email, password, telephone:'', admin:false};
     users.push(newUser);
-    console.log(users);
     return newUser;
 }
 
@@ -46,21 +45,14 @@ export async function updateUserData({id, name, email, password, telephone}){
     users[index].password = password
     users[index].telephone = telephone
 
-    console.log(users[index]);
     return {name, email, password, telephone}
 }
 
-export async function removeOwnUser(id) {
-    const index = users.findIndex(u => u.id === id)
-    users.splice(index, 1);
-    console.log(users);
-    return users;
-  }
-
 export async function removeUserById(id) {
-    users.splice(id, 1); //todo: Verificar a utilização com pop
-    console.log(users);
-    return users;
+    const index = users.findIndex(u => u.id === id);
+    if(index === -1) return false;
+    users.splice(index, 1);
+    return true;
   }
   
 

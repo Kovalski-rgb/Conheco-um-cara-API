@@ -1,4 +1,4 @@
-import { getUser, login, registerUser, updateUser, deleteOwnUser, deleteUser } from "./service.mjs";
+import { getUser, login, registerUser, updateUser, deleteUser } from "./service.mjs";
 
 /**
  * @openapi
@@ -73,7 +73,7 @@ export async function get_user(req, res, _) {
  *  
  *    responses:
  *      '200':
- *        description: "New user registered sucesfully"
+ *        description: "New user registered successfully"
  *      '400':
  *        description: "Invalid data provided"
  *      '401':
@@ -113,7 +113,7 @@ export async function get_current_user(req, res, _){
  * 
  *     responses:
  *       '200':
- *         description: "New user registered sucesfully"
+ *         description: "New user registered successfully"
  *       '400':
  *         description: "Invalid data provided"
  *       '401':
@@ -139,7 +139,7 @@ export async function user_register(req, res, _) {
  * 
  *    responses:
  *      '200':
- *        description: "Developer info retrieved sucesfully"
+ *        description: "Developer info retrieved successfully"
  */
 export async function dev_info(req, res, _){
   return res.json([
@@ -183,7 +183,7 @@ export async function dev_info(req, res, _){
  *      401:
  *        description: Unauthorized put request
  *      500:
- *        description: Some errors happend.
+ *        description: Some errors happened.
  *
  *    security:
  *      - JWT: ['USER']
@@ -209,11 +209,11 @@ export async function user_update(req, res, _) {
  *
  *    responses:
  *      200:
- *        description: data is delete
+ *        description: data is deleted
  *      401:
  *        description: Unauthorized put request
  *      500:
- *        description: Some errors happend.
+ *        description: Some errors happened.
  *
  *    security:
  *      - JWT: ['USER']
@@ -221,15 +221,15 @@ export async function user_update(req, res, _) {
 
 export async function delete_current_user(req, res, _) {
   if(!req.user){ res.sendStatus(401); }
-  const userDataDelete = await deleteOwnUser(req.user.id);
+  const userDataDelete = await deleteUser(parseInt(req.user.id));
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
 }
 
 /**
  * @openapi
- * /users/del/{id}:
+ * /users/{id}:
  *  delete:
- *    summary: "Delete user by id. Admin user feat."
+ *    summary: "Delete user by id. Admin permission needed"
  *
  *    tags:
  *      - "Profile"
@@ -246,17 +246,14 @@ export async function delete_current_user(req, res, _) {
  *      401:
  *        description: Unauthorized put request
  *      500:
- *        description: Some errors happend.
+ *        description: Some errors happened.
  *
  *    security:
  *      - JWT: ['ADMIN']
  */
 
-export async function delete_user(req, res, _){ //delete by id. Just admin feature.
+export async function delete_user(req, res, _){
   if(!req.user){ res.sendStatus(401); }
-  req.body.id = req.user.id;
-  const userDataDelete = await deleteUser(req.body);
+  const userDataDelete = await deleteUser(parseInt(req.params.id));
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
 }
-
-//COMO COLOCA SEGURANÇA ADM?
