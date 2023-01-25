@@ -11,14 +11,113 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  name     String @default("")
-  roles    Role[]
+  id          Int         @id @default(autoincrement())
+  email       String      @unique
+  password    String
+  name        String
+  telephone   Int
+  roles       Role[]
+  communities Community[]
+  product     Product[]
+  service     Service[]
+  Post        Post[]
+  Moderator   Moderator?  @relation(fields: [moderatorId], references: [id])
+  moderatorId Int?
 }
 
 model Role {
   name  String @id
   users User[]
+}
+
+model Service {
+  id          Int            @id @default(autoincrement())
+  name        String
+  price       Float
+  image       String
+  user        User           @relation(fields: [userId], references: [id])
+  description String
+  serviceType ServiceTypes[]
+  createdAt   DateTime
+  deletedAt   DateTime
+  active      Boolean
+  userId      Int
+  Post        Post[]
+}
+
+model ServiceTypes {
+  id       Int       @id @default(autoincrement())
+  name     String
+  services Service[]
+}
+
+model Product {
+  id          Int            @id @default(autoincrement())
+  name        String
+  price       Float
+  image       String
+  user        User           @relation(fields: [userId], references: [id])
+  description String
+  productType ProductTypes[]
+  createdAt   DateTime
+  deletedAt   DateTime
+  active      Boolean
+  userId      Int
+  Post        Post[]
+}
+
+model ProductTypes {
+  id       Int       @id @default(autoincrement())
+  name     String
+  products Product[]
+}
+
+model Community {
+  id           Int       @id @default(autoincrement())
+  name         String
+  users        User[]
+  posts        Post[]
+  messages     Message[]
+  createdAt    DateTime
+  deletedAt    DateTime
+  code         String
+  moderators   Moderator @relation(fields: [moderatorsId], references: [id])
+  moderatorsId Int @unique
+}
+
+model Moderator {
+  id        Int       @id @default(autoincrement())
+  community Community?
+  users     User[]
+}
+
+model Post {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String     @default("")
+  image       String     @default("")
+  user        User       @relation(fields: [userId], references: [id])
+  service     Service    @relation(fields: [serviceId], references: [id])
+  product     Product    @relation(fields: [productId], references: [id])
+  updatedAt   DateTime
+  createdAt   DateTime   @default(now())
+  deletedAt   DateTime
+  active      Boolean    @default(true)
+  Community   Community? @relation(fields: [communityId], references: [id])
+  communityId Int?
+  userId      Int
+  serviceId   Int
+  productId   Int
+}
+
+model Message {
+  id          Int        @id @default(autoincrement())
+  // fromUser    User       @relation(fields: [fromUserId], references: [id])
+  // toUser      User       @relation(fields: [toUserId], references: [id])
+  contents    String
+  date        DateTime
+  Community   Community? @relation(fields: [communityId], references: [id])
+  communityId Int?
+  fromUserId  Int
+  toUserId    Int
 }
