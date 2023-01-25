@@ -10,6 +10,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import resolver from './esmresolver.mjs';
 import { JWT_SECURITY } from '../jwt.mjs';
+import { bootstrapDB } from '../database.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -59,5 +60,7 @@ app.use(OpenApiValidator.middleware({
 }));
 
 app.use(express.static(`${__dirname}/../public`));
+
+bootstrapDB().catch(console.error)
 
 export default app;

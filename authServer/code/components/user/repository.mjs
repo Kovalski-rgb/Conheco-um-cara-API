@@ -1,26 +1,37 @@
-let users = [
-    {id: 1, name:'admin', email:'admin@email.com', password: '00#ADmin', telephone: '', admin: true},
-    {id: 2, name:'guest', email:'guest@email.com', password: '00#GUest', telephone: '', admin: false}
-];
+import { prisma } from "../../database.mjs";
+import bcrypt from "bcrypt";
 
-let idCount = 2;
-
-function formatUser(user) {
-    if (!user) return user;    
-    return {...user, password: undefined};
+const USER_FIELDS = {
+    id: true,
+    email: true,
+    name: true,
+    roles: true,
+    password: false
 }
 
 export async function loadById(id) {
-    return formatUser(users.find(u => u.id === id));
+    const user = await prisma.user.findUnique({
+        where: {id},
+        select: USER_FIELDS
+    });
+    if(!user) return null;
+    return user;
 }
 
 export async function loadByCredentials(email, password) {
-    return formatUser(
-        users.find(u => 
-            u.email === email && 
-            u.password === password
-        )
-    );
+    const user = await prisma.user.findUnique({
+        where: {email},
+        select: {
+            ...USER_FIELDS,
+            password: true
+        }
+    });
+    if(!user) return null;
+    if(!await bcrypt.compare(password, user.password))
+        return null;
+    
+    delete user.password;
+    return user;
 }
 
 export async function findEmail(email){
