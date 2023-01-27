@@ -11,16 +11,25 @@ import swaggerUi from 'swagger-ui-express';
 import resolver from './esmresolver.mjs';
 import { JWT_SECURITY } from '../jwt.mjs';
 import { bootstrapDB } from '../database.mjs';
+import { isDev } from '../env.mjs';
+import { ServerError } from '../errors.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 const BASE_PATH = `${__dirname}/../components`;
 
-app.use(logger('dev'));
+const MORGAN_FMT = isDev() ? "dev" : ":remote-addr :method :url HTTP/:http-version :status :res[content-length] - :response-time ms :user-agent"
+
+app.use(logger(MORGAN_FMT, {
+    skip: (req, res) => {
+        req.url.includes("healthCheck") && (res.statusCode == 200 || res.status === 304)
+    }
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
 
 const swaggerOptions = {
     swaggerDefinition: {
@@ -58,7 +67,7 @@ app.use(OpenApiValidator.middleware({
         resolver
     }
 }));
-
+app.use(ServerError.HANDLERS);
 app.use(express.static(`${__dirname}/../public`));
 
 bootstrapDB().catch(console.error)

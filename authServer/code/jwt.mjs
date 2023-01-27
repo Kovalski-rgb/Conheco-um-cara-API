@@ -22,7 +22,7 @@ export function createToken(user) {
             id: user.id,
             name: user.name,
             email: user.email,
-            roles: user.admin ? ['ADMIN', 'USER'] : ['USER']
+            roles: user.roles.some(r=>r.name==='ADMIN') ? ['ADMIN', 'USER'] : ['USER']
         }
     }
     return jwt.encode(payload, process.env.TOKEN_SECRET);

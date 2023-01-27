@@ -53,11 +53,6 @@ components:
 
     UserInfo:
       type: object
-      required:
-        - email
-        - name
-        - password
-        - telephone
       properties:
         email:
           type: string

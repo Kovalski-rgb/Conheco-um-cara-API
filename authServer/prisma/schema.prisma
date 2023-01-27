@@ -15,7 +15,7 @@ model User {
   email       String      @unique
   password    String
   name        String
-  telephone   Int
+  telephone   Int?
   roles       Role[]
   communities Community[]
   product     Product[]

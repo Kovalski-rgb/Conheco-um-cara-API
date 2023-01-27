@@ -1,16 +1,13 @@
-// todo: initialize mysql server, install mariadb - https://www.geeksforgeeks.org/how-to-install-and-configure-mysql-on-arch-based-linux-distributionsmanjaro/
-// npx prisma migrate dev
-// config local server at .env
-
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import { debug, info } from "./logger.mjs";
 
 export const prisma = new PrismaClient;
 
 async function makeRole(name) {
     let exists = await prisma.role.findUnique({ where: { name } })
     if (exists) {
-        console.log(`   Role ${name} found.`);
+        debug({description:`Role ${name} found.`});
         return;
     }
     await prisma.role.create(
@@ -18,7 +15,7 @@ async function makeRole(name) {
             data: { name }
         }
     );
-    console.log('Role created!');
+    debug({description:'Role created!'});
 }
 
 async function makeAdmin() {
@@ -38,7 +35,7 @@ async function makeAdmin() {
         }
     });
     if (exists) {
-        console.log(`   ADMIN found.`);
+        debug({description:`ADMIN found.`});
         return;
     }
     await prisma.user.create({
@@ -53,13 +50,13 @@ async function makeAdmin() {
             }
         }
     });
-    console.log('Default admin created!');
+    debug({description:'Default admin created!'});
 }
 
 export async function bootstrapDB() {
-    console.log('checking initial data...');
+    debug({description:'checking initial data...'});
     await makeRole('ADMIN');
     await makeRole('USER');
     await makeAdmin();
-    console.log("finished checking")
+    debug({description:"finished checking"})
 }
