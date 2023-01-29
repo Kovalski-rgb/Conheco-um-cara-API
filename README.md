@@ -2,7 +2,7 @@
 API do [Eu conheço um cara] (nome temporario)
 
 # Rodando a API
-- Abra um terminal e clone o projeto com o commando ``` $ git clone```
+- Abra um terminal e clone o projeto com o commando ```$ git clone```
 - Ainda no terminal:
     - ```$ cd Conheco-um-cara-API/```
     - ```$ cd authServer```
