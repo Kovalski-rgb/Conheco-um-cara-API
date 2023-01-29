@@ -7,7 +7,7 @@ API do [Eu conheço um cara] (nome temporario)
     - ```$ cd Conheco-um-cara-API/```
     - ```$ cd authServer```
     - ```$ touch .env```
-    - Não feche o terminal, com seu editor de texto de preferencia, defina as variaveis de ambiente `ISSUER` e `TOKEN_SECRET` dentro do arquivo `.env`
+    - Não feche o terminal, com seu editor de texto de preferencia, defina as variaveis de ambiente ISSUER, TOKEN_SECRET e NODE_ENV dentro do arquivo .env
     - Voltando ao terminal, rode o comando ```$ npm install``` para instalar as dependencias da API
     - ```$ npm start``` para rodar o server
 
