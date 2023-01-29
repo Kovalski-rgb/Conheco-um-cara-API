@@ -14,3 +14,4 @@ API do [Eu conheço um cara] (nome temporario)
 ## Notas
 - A API esta settada como padrão na porta 3001
 - Para acessar a documentação, rode a API e entre na url: `http://localhost:3001/api-docs/`
+- 
