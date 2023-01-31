@@ -28,6 +28,7 @@ export async function loadByCredentials(email, password) {
             password: true
         }
     });
+
     ServerError
     .throwIfNot(user, "Invalid credentials", unauthorized)
     .throwIfNot(await bcrypt.compare(password, user.password), 

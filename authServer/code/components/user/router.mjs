@@ -228,7 +228,6 @@ export async function user_update(req, res, _) {
  *    security:
  *      - JWT: ['USER']
  */
-
 export async function delete_current_user(req, res, _) {
   if(!req.user){ res.sendStatus(401); }
   const userDataDelete = await deleteUser(parseInt(req.user.id));
@@ -261,7 +260,6 @@ export async function delete_current_user(req, res, _) {
  *    security:
  *      - JWT: ['ADMIN']
  */
-
 export async function delete_user(req, res, _){
   if(!req.user){ res.sendStatus(401); }
   const userDataDelete = await deleteUser(parseInt(req.params.id));
