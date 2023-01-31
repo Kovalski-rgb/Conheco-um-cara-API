@@ -5,21 +5,6 @@ import { debug, info } from "./logger.mjs";
 export const prisma = new PrismaClient;
 
 
-async function makeRole(name) {
-    let exists = await prisma.role.findUnique({ where: { name } })
-    if (exists) {
-        debug({description:`Role ${name} found.`});
-        return;
-    }
-    await prisma.role.create(
-        {
-            data: { name }
-        }
-    );
-    debug({description:'Role created!'});
-}
-
-
 async function makeAdmin() {
     const email = process.env.DEFAULT_ADMIN_EMAIL;
     const password = await bcrypt.hash(
@@ -48,8 +33,6 @@ async function makeAdmin() {
 
 export async function bootstrapDB() {
     debug({description:'checking initial data...'});
-    await makeRole('ADMIN');
-    await makeRole('USER');
     await makeAdmin();
     debug({description:"finished checking"})
 }
