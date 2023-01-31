@@ -33,13 +33,13 @@ const swaggerOptions = {
   swaggerDefinition: {
     openapi: "3.0.3",
     info: {
-      title: "Product and Service Server",
+      title: "Community Server",
       version: "0.1.0",
-      description: "Server that manages products and services"
+      description: "Server that manages communities, posts and messages"
     },
     servers: [{
-      url: "http://localhost:3002/api",
-      description: "Product and Service Server"
+      url: "http://localhost:3003/api",
+      description: "Community server"
     }]
   },
   apis: [

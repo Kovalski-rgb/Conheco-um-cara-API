@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Products {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Decimal  @db.Decimal(6, 2)
+  image       String
+  owner       Users    @relation(fields: [userId], references: [id])
+  userId      Int      @unique
+  productType String
+  createdAt   DateTime
+  deletedAt   DateTime
+  active      Boolean
+  Posts       Posts[]
+}
+
+model Services {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Decimal  @db.Decimal(6, 2)
+  image       String
+  owner       Users    @relation(fields: [userId], references: [id])
+  userId      Int      @unique
+  productType String
+  createdAt   DateTime
+  deletedAt   DateTime
+  active      Boolean
+  Posts       Posts[]
+}
+
+model Users {
+  id               Int          @id @default(autoincrement())
+  name             String
+  email            String
+  telephone        String
+  isAdmin          Boolean
+  products         Products[]
+  services         Services[]
+  Posts            Posts[]
+  Communities      Communities? @relation(fields: [communitiesId], references: [id])
+  communitiesId    Int?
+  SentMessages     Messages[]   @relation("SentMessages")
+  ReceivedMessages Messages[]   @relation("ReceivedMessages")
+  Moderators       Moderators?  @relation(fields: [moderatorsId], references: [id])
+  moderatorsId     Int?
+}
+
+model Posts {
+  id            Int          @id @default(autoincrement())
+  title         String
+  description   String
+  image         String
+  creator       Users        @relation(fields: [userId], references: [id])
+  userId        Int
+  product       Products?    @relation(fields: [productsId], references: [id])
+  productsId    Int?
+  service       Services?    @relation(fields: [servicesId], references: [id])
+  servicesId    Int?
+  updatedAt     DateTime?
+  createdAt     DateTime?
+  deletedAt     DateTime?
+  active        Boolean
+  Communities   Communities? @relation(fields: [communitiesId], references: [id])
+  communitiesId Int?
+}
+
+model Communities {
+  id           Int        @id @default(autoincrement())
+  name         String
+  users        Users[]
+  moderators   Moderators @relation(fields: [moderatorsId], references: [id])
+  posts        Posts[]
+  messages     Messages[]
+  createdAt    DateTime
+  deletedAt    DateTime
+  moderatorsId Int
+}
+
+model Messages {
+  id            Int          @id @default(autoincrement())
+  fromUser      Users        @relation(fields: [fromUserId], references: [id], name: "SentMessages")
+  toUser        Users        @relation(fields: [toUserId], references: [id], name: "ReceivedMessages")
+  contents      String
+  timeSent      DateTime
+  Communities   Communities? @relation(fields: [communitiesId], references: [id])
+  communitiesId Int?
+  fromUserId    Int
+  toUserId      Int
+}
+
+model Moderators {
+  id          Int           @id @default(autoincrement())
+  users       Users[]
+  Communities Communities[]
+}

@@ -3,8 +3,8 @@
 /**
  * Module dependencies.
  */
-
 import './dotenvsetup.mjs';
+import '../lib/env.mjs'
 import app from './app.mjs';
 
 import Debug from 'debug'
@@ -15,7 +15,7 @@ const debug = Debug('node:server');
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3002');
+const port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
 /**

@@ -1,13 +1,22 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE `User` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `telephone` INTEGER NULL,
+    `moderatorId` INTEGER NULL,
 
-  - Added the required column `telephone` to the `User` table without a default value. This is not possible if the table is not empty.
+    UNIQUE INDEX `User_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-*/
--- AlterTable
-ALTER TABLE `user` ADD COLUMN `moderatorId` INTEGER NULL,
-    ADD COLUMN `telephone` INTEGER NOT NULL,
-    ALTER COLUMN `name` DROP DEFAULT;
+-- CreateTable
+CREATE TABLE `Role` (
+    `name` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`name`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Service` (
@@ -106,6 +115,15 @@ CREATE TABLE `Message` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `_RoleToUser` (
+    `A` VARCHAR(191) NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_RoleToUser_AB_unique`(`A`, `B`),
+    INDEX `_RoleToUser_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_ServiceToServiceTypes` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -158,6 +176,12 @@ ALTER TABLE `Post` ADD CONSTRAINT `Post_communityId_fkey` FOREIGN KEY (`communit
 
 -- AddForeignKey
 ALTER TABLE `Message` ADD CONSTRAINT `Message_communityId_fkey` FOREIGN KEY (`communityId`) REFERENCES `Community`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_RoleToUser` ADD CONSTRAINT `_RoleToUser_A_fkey` FOREIGN KEY (`A`) REFERENCES `Role`(`name`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_RoleToUser` ADD CONSTRAINT `_RoleToUser_B_fkey` FOREIGN KEY (`B`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_ServiceToServiceTypes` ADD CONSTRAINT `_ServiceToServiceTypes_A_fkey` FOREIGN KEY (`A`) REFERENCES `Service`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

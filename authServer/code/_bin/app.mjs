@@ -35,13 +35,13 @@ const swaggerOptions = {
     swaggerDefinition: {
         openapi: "3.0.3",
         info: {
-            title: "Music Server",
+            title: "Authentication server",
             version: "1.0.0",
-            description: "Music Server Authentication API"
+            description: "Authentication Server"
         },
         servers: [{
             url: "http://localhost:3001/api",
-            description: "Music Server"
+            description: "Auth Server"
         }]
     },
     apis: [

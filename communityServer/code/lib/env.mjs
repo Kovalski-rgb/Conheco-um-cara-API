@@ -13,3 +13,7 @@ export function isProd(){
 export function isStaging(){
     return !isProd();
 }
+
+export function getServerPort(){
+    return process.env.PORT;
+}
