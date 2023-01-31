@@ -4,7 +4,7 @@ import { debug, info } from "./logger.mjs";
 
 export const prisma = new PrismaClient;
 
-/*
+
 async function makeRole(name) {
     let exists = await prisma.role.findUnique({ where: { name } })
     if (exists) {
@@ -18,7 +18,7 @@ async function makeRole(name) {
     );
     debug({description:'Role created!'});
 }
-*/
+
 
 async function makeAdmin() {
     const email = process.env.DEFAULT_ADMIN_EMAIL;
@@ -28,13 +28,7 @@ async function makeAdmin() {
     );
 
     const exists = await prisma.user.findFirst({
-        where: {
-            user: {
-                some: {
-                    isAdmin: true
-                }
-            }
-        }
+        where: { isAdmin: true }
     });
     if (exists) {
         debug({description:`ADMIN found.`});
@@ -44,21 +38,18 @@ async function makeAdmin() {
         data: {
             email,
             password,
-            isAdmin: true,
-            roles: {
-                connect: [
-                    { name: 'ADMIN' }, { name: 'USER' }
-                ]
-            }
+            name: "ADMIN",
+            isAdmin: true
         }
     });
     debug({description:'Default admin created!'});
 }
 
+
 export async function bootstrapDB() {
     debug({description:'checking initial data...'});
-    //await makeRole('ADMIN');
-    //await makeRole('USER');
+    await makeRole('ADMIN');
+    await makeRole('USER');
     await makeAdmin();
     debug({description:"finished checking"})
 }

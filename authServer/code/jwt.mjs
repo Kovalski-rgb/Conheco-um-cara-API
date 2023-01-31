@@ -22,18 +22,14 @@ export function createToken(user) {
             id: user.id,
             name: user.name,
             email: user.email,
-            roles: user.roles.some(r=>r.name==='ADMIN') ? ['ADMIN', 'USER'] : ['USER']
+            isAdmin: user.isAdmin
         }
     }
     return jwt.encode(payload, process.env.TOKEN_SECRET);
 }
 
-function hasAnyRole(user, roles = []){
-    if(roles.size === 0)
-        return true;
-    if(!user || !user.roles) 
-        return false;
-    return user.roles.some(r=>roles.includes(r));
+function hasPermission(user){
+    return user.isAdmin;
 }
 
 function expandClaims(token) {
@@ -76,10 +72,6 @@ export function decode(bearerString, noVerify = false){
 }
 
 export function JWT_SECURITY(req, scopes=[]){
-    if(scopes.size === 0){
-        scopes.push('USER');
-    }
-
     const token = decode(req.header("Authorization"));
 
     if(!token.user || token.issuer !== process.env.ISSUER){
@@ -89,12 +81,12 @@ export function JWT_SECURITY(req, scopes=[]){
         };
     }
     
-    if(!hasAnyRole(token.user, scopes)){
+    if(!hasPermission(token.user)){
         throw {
             status: 401, 
             message: 'Unauthorized' +
             process.env.NODE_ENV !== 'Production' ? 
-                `. Roles: [${token.user.roles}] Needed: [${scopes}]` :''
+                `. userAdminPermission: [${token.user.isAdmin}]` :''
         };
     }
 
