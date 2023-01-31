@@ -1,13 +1,13 @@
 import { prisma } from "../../database.mjs";
 import bcrypt from "bcrypt";
 //import { debug } from "../../logger.mjs";
-import { badRequest, notFound, ServerError, unauthorized } from '../../errors.mjs';
+import { badRequest, notFound, ServerError } from '../../errors.mjs';
 
 const USER_FIELDS = {
     id: true,
     email: true,
     name: true,
-    isAdmin: true,
+    roles: true,
     password: false
 }
 
@@ -30,9 +30,9 @@ export async function loadByCredentials(email, password) {
     });
 
     ServerError
-    .throwIfNot(user, "Invalid credentials", unauthorized)
+    .throwIfNot(user, `Not Found: ${username}`, notFound)
     .throwIfNot(await bcrypt.compare(password, user.password), 
-        "Invalid credentials", unauthorized)
+        "Invalid credentials")
     if (!user) return null;
     if (!await bcrypt.compare(password, user.password))
         return null;
@@ -48,11 +48,16 @@ export async function registerNewUser({ name, email, password, telephone }) {
     });
     if (exists) return null;
     password = await bcrypt.hash(password, await bcrypt.genSalt());
-    const newUser = { name, email, password, telephone };
+    const newUser = { name, email, password, telephone, isAdmin: false };
     await prisma.user.create(
         {
             data: {
-                ...newUser
+                ...newUser,
+                roles: {
+                    connect: [
+                        { name: 'USER' }
+                    ]
+                }
             }
         }
     );
