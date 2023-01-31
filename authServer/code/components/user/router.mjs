@@ -1,4 +1,5 @@
 import { getUser, login, registerUser, updateUser, deleteUser } from "./service.mjs";
+import axios from "axios"
 
 /**
  * @openapi
@@ -121,7 +122,16 @@ export async function get_current_user(req, res, _){
  */
 export async function user_register(req, res, _) {
   const user = await registerUser(req.body);
+  if(user){
+    const echo = echoNewUser(user);
+  }
   return user ? res.sendStatus(200) : res.sendStatus(401);
+}
+
+async function echoNewUser(createdUser){
+  const response = await axios.post('http://localhost:3003/api/test', createdUser);
+  console.log(response);
+  return response;
 }
 
 /**
