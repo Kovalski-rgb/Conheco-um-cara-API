@@ -26,13 +26,7 @@ async function makeAdmin() {
     );
 
     const exists = await prisma.user.findFirst({
-        where: {
-            roles: {
-                some: {
-                    name: 'ADMIN'
-                }
-            }
-        }
+        where: { isAdmin: true }
     });
     if (exists) {
         debug({description:`ADMIN found.`});
@@ -43,11 +37,7 @@ async function makeAdmin() {
             email,
             password,
             name: "ADMIN",
-            roles: {
-                connect: [
-                    { name: 'ADMIN' }, { name: 'USER' }
-                ]
-            }
+            isAdmin: true
         }
     });
     debug({description:'Default admin created!'});
