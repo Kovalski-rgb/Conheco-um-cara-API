@@ -1,6 +1,7 @@
 import { prisma } from "../../database.mjs";
 import bcrypt from "bcrypt";
-import { debug } from "../../logger.mjs";
+//import { debug } from "../../logger.mjs";
+import { badRequest, notFound, ServerError } from '../../errors.mjs';
 
 const USER_FIELDS = {
     id: true,
@@ -27,6 +28,10 @@ export async function loadByCredentials(email, password) {
             password: true
         }
     });
+    ServerError
+    .throwIfNot(user, `Not Found: ${username}`, notFound)
+    .throwIfNot(await bcrypt.compare(password, user.password), 
+        "Invalid credentials")
     if (!user) return null;
     if (!await bcrypt.compare(password, user.password))
         return null;
@@ -96,6 +101,7 @@ export async function removeUserById(id) {
     }
     return false;
 }
+
 
 
 
