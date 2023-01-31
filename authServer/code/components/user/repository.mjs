@@ -28,10 +28,12 @@ export async function loadByCredentials(email, password) {
             password: true
         }
     });
+
     ServerError
-    .throwIfNot(user, `Not Found: ${username}`, notFound)
+    .throwIfNot(user, `Invalid credentials: ${email}`, notFound)
     .throwIfNot(await bcrypt.compare(password, user.password), 
         "Invalid credentials")
+
     if (!user) return null;
     if (!await bcrypt.compare(password, user.password))
         return null;

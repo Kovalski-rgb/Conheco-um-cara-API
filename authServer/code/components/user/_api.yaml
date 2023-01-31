@@ -19,13 +19,13 @@ components:
           minLength: 6
           maxLength: 30
           pattern: ^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$
-          example: guest@email.com
+          example: admin@email.com
         password:
           type: string
           minLength: 8
           description: Must at least be of length 8, 2 UpperCase letters, and one special symbol
           pattern: ^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$
-          example: 00#GUest
+          example: 00-ADmin
           
     NewUserInfo:
       type: object
