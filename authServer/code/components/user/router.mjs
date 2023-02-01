@@ -64,7 +64,7 @@ export async function get_user(req, res, _) {
  * @openapi
  * /users/me:
  *  get:
- *    summary: "Gets currently logged user"
+ *    summary: "Gets currently logged user, user need to be logged in"
  *  
  *    tags:
  *      - "Profile"
@@ -123,6 +123,7 @@ export async function get_current_user(req, res, _){
 export async function user_register(req, res, _) {
   const user = await registerUser(req.body);
   if(user){
+    console.log(user);
     const echo = echoNewUser(user);
   }
   return user ? res.sendStatus(200) : res.sendStatus(401);
@@ -172,7 +173,7 @@ export async function dev_info(req, res, _){
  * @openapi
  * /users/me:
  *  put:
- *    summary: "Updates user data"
+ *    summary: "Updates user data, user need to be logged in"
  *
  *    tags:
  *      - "Profile"
@@ -209,7 +210,7 @@ export async function user_update(req, res, _) {
  * @openapi
  * /users/me:
  *  delete:
- *    summary: "Delete own user data"
+ *    summary: "Delete own user data, user need to be logged in"
  *
  *    tags:
  *      - "Profile"

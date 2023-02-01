@@ -71,13 +71,13 @@ export async function updateUserData({ id, name, email, password, telephone }) {
         name,
         email,
         password: password ? await bcrypt.hash(password, await bcrypt.genSalt()) : undefined,
-        telephone: parseInt(telephone)
+        telephone: telephone
     }
     
     if(!user.name) delete user.name;
     if(!user.email) delete user.email;
     if(!user.password) delete user.password;
-    if(isNaN(user.telephone)) delete user.telephone;
+    if(!user.telephone) delete user.telephone;
 
     const updated = prisma.user.update({
         where: { 'id':id },

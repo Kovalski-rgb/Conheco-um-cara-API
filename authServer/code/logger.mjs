@@ -15,7 +15,10 @@ function shortMsg({
     ...content
 }) {
     const src = origin ? `[${origin}]` : '';
-    let msg = `[${formatDate(timestamp)}] ${src}${level}: ${description} ${JSON.stringify(content, null, 4)}`;
+    let msg = `[${formatDate(timestamp)}] ${src}${level}: ${description}`;
+    if(content) { 
+        msg += JSON.stringify(content, null, 4);
+    }
     if (err) {
         if (err.stack) msg += `\n${err.stack}`;
         if (err.errors) msg += `\nErrors: ${JSON.stringify(err.errors, null, 4)}`;
@@ -36,21 +39,34 @@ function longMsg({
     //TODO
 }
 
-function register(params){
+function register(params) {
     params.timestamp = new Date();
-    const {logger, level} = params;
+    const { logger, level } = params;
 
     let color;
-    if(level === 'ERROR') color = chalk.redBright;
+    if (level === 'ERROR') color = chalk.redBright;
     else if (level === 'INFO') color = chalk.yellowBright;
     else color = chalk.white;
 
     console.error(color(shortMsg(params)));
-    if(logger) logger(longMsg(params));
+    if (logger) logger(longMsg(params));
 
     return false;
 }
 
-export const debug = (params) => register({level: 'DEBUG', ...params});
-export const info = (params) => register({level: 'INFO', ...params});
-export const error = (params) => register({level: 'ERROR', ...params});
+export function runAndLog(
+    promise,
+    { orgin = 'Async', onSuccess = info, onError = error } = {}) {
+
+        promise.then(r => {
+        const log = { origin, description: 'Sucess' };
+        if (r) log.result = JSON.stringify(r);
+        onSuccess(log);
+    })
+        .catch(error => onError({ origin, description: 'Aborted', error }))
+
+}
+
+export const debug = (params) => register({ level: 'DEBUG', ...params });
+export const info = (params) => register({ level: 'INFO', ...params });
+export const error = (params) => register({ level: 'ERROR', ...params });
