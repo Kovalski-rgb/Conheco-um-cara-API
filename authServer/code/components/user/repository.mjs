@@ -1,7 +1,7 @@
-import { prisma } from "../../database.mjs";
+import { prisma } from "../../lib/database.mjs";
 import bcrypt from "bcrypt";
-//import { debug } from "../../logger.mjs";
-import { badRequest, notFound, ServerError } from '../../errors.mjs';
+//import { debug } from "../../lib/logger.mjs";
+import { badRequest, notFound, ServerError } from '../../lib/errors.mjs';
 
 const USER_FIELDS = {
     id: true,

@@ -9,10 +9,10 @@ import OpenApiValidator from 'express-openapi-validator';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import resolver from './esmresolver.mjs';
-import { JWT_SECURITY } from '../jwt.mjs';
-import { bootstrapDB } from '../database.mjs';
-import { isDev } from '../env.mjs';
-import { ServerError } from '../errors.mjs';
+import { JWT_SECURITY } from '../lib/jwt.mjs';
+import { bootstrapDB } from '../lib/database.mjs';
+import { isDev } from '../lib/env.mjs';
+import { ServerError } from '../lib/errors.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();

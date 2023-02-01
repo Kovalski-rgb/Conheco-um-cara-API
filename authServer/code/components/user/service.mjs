@@ -1,4 +1,4 @@
-import { createToken } from "../../jwt.mjs";
+import { createToken } from "../../lib/jwt.mjs";
 import { loadByCredentials, loadById, registerNewUser, updateUserData, removeUserById} from "./repository.mjs";
 
 export async function login({email, password}) {
