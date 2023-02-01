@@ -48,7 +48,7 @@ export async function registerNewUser({ name, email, password, telephone }) {
     });
     if (exists) return null;
     password = await bcrypt.hash(password, await bcrypt.genSalt());
-    const newUser = { name, email, password, telephone, isAdmin: false };
+    const newUser = { name, email, password, telephone };
     await prisma.user.create(
         {
             data: {
