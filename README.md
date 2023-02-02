@@ -10,7 +10,7 @@ API do [Eu conheço um cara] (nome temporario)
     - Você vai precisar configurar as seguintes variaveis no arquivo .env:
         - `ISSUER`, `TOKEN_SECRET` e `NODE_ENV` para o JWT e o logger;
         - `DEFAULT_ADMIN_EMAIL`, `DEFAULT_ADMIN_PWD` para o bootstrap da base de dados;
-        - `DEFAULT_DUMMY_NAME`, `DEFAULT_DUMMY_EMAIL`, `DEFAULT_DUMMY_PWD` para unit testing das rotas, essas variaveis s;
+        - `DEFAULT_DUMMY_NAME`, `DEFAULT_DUMMY_EMAIL`, `DEFAULT_DUMMY_PWD` para unit testing das rotas, opcionais;
         - `DATABASE_URL` e a base de dados criada no mysql/mariadb para o prisma
     - Rode o comando ```$ npm install``` para instalar as dependencias da API
     - ```$ npm start``` para rodar o server
