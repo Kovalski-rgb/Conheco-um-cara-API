@@ -84,8 +84,7 @@ export async function updateUserData({ id, name, email, password, telephone }) {
             ...user
         }
     });
-    console.log("updated user fields: ")
-    console.log(updated);
+    delete (await updated).password
     return updated
 }
 

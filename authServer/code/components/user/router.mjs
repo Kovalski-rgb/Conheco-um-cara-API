@@ -122,10 +122,6 @@ export async function get_current_user(req, res, _){
  */
 export async function user_register(req, res, _) {
   const user = await registerUser(req.body);
-  if(user){
-    console.log(user);
-    const echo = echoNewUser(user);
-  }
   return user ? res.sendStatus(200) : res.sendStatus(401);
 }
 

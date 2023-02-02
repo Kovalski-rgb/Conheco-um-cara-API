@@ -13,3 +13,18 @@ export function isProd(){
 export function isStaging(){
     return !isProd();
 }
+
+export function getDefaultAdminCredentials(){
+    return {
+        'email':process.env.DEFAULT_ADMIN_EMAIL,
+        'password': process.env.DEFAULT_ADMIN_PWD
+    }
+}
+
+export function getDefaultDummyCredentials(){
+    return {
+        'name':process.env.DEFAULT_DUMMY_NAME,
+        'email':process.env.DEFAULT_DUMMY_EMAIL,
+        'password': process.env.DEFAULT_DUMMY_PWD
+    }
+}
