@@ -35,7 +35,7 @@ const swaggerOptions = {
     info: {
       title: "BFF Server",
       version: "0.1.0",
-      description: "Server that connect all backend services to make frontend integration friendly."
+      description: "Backend For Frontend server."
     },
     servers: [{
       url: "http://localhost:3007/api",
