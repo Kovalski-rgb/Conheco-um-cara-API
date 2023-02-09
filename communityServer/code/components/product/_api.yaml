@@ -1,9 +1,0 @@
-components:
-  schemas:
-    testSchema:
-      type: object
-      properties:
-        name:
-          type: string
-        test:
-          type: string

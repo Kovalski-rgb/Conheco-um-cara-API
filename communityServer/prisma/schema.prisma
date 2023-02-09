@@ -11,49 +11,44 @@ datasource db {
 }
 
 model Products {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String
-  price       Decimal  @db.Decimal(6, 2)
+  price       Decimal   @db.Decimal(6, 2)
   image       String
-  owner       Users    @relation(fields: [userId], references: [id])
-  userId      Int      @unique
+  owner       Users     @relation(fields: [userId], references: [id])
+  userId      Int       @unique
   productType String
-  createdAt   DateTime
-  deletedAt   DateTime
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
   active      Boolean
   Posts       Posts[]
 }
 
 model Services {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   description String
-  price       Decimal  @db.Decimal(6, 2)
+  price       Decimal   @db.Decimal(6, 2)
   image       String
-  owner       Users    @relation(fields: [userId], references: [id])
-  userId      Int      @unique
+  owner       Users     @relation(fields: [userId], references: [id])
+  userId      Int       @unique
   productType String
-  createdAt   DateTime
-  deletedAt   DateTime
+  createdAt   DateTime  @default(now())
+  deletedAt   DateTime?
   active      Boolean
   Posts       Posts[]
 }
 
 model Users {
-  id               Int          @id @default(autoincrement())
-  name             String
-  email            String
-  telephone        String
-  isAdmin          Boolean
+  id               Int           @id
   products         Products[]
   services         Services[]
   Posts            Posts[]
-  Communities      Communities? @relation(fields: [communitiesId], references: [id])
-  communitiesId    Int?
-  SentMessages     Messages[]   @relation("SentMessages")
-  ReceivedMessages Messages[]   @relation("ReceivedMessages")
-  Moderators       Moderators?  @relation(fields: [moderatorsId], references: [id])
+  Communities      Communities[]
+  SentMessages     Messages[]    @relation("SentMessages")
+  ReceivedMessages Messages[]    @relation("ReceivedMessages")
+  Moderator        Moderators?   @relation(fields: [moderatorsId], references: [id])
   moderatorsId     Int?
 }
 
@@ -69,23 +64,24 @@ model Posts {
   service       Services?    @relation(fields: [servicesId], references: [id])
   servicesId    Int?
   updatedAt     DateTime?
-  createdAt     DateTime?
+  createdAt     DateTime     @default(now())
   deletedAt     DateTime?
   active        Boolean
-  Communities   Communities? @relation(fields: [communitiesId], references: [id])
+  Community     Communities? @relation(fields: [communitiesId], references: [id])
   communitiesId Int?
 }
 
 model Communities {
-  id           Int        @id @default(autoincrement())
-  name         String
-  users        Users[]
-  moderators   Moderators @relation(fields: [moderatorsId], references: [id])
-  posts        Posts[]
-  messages     Messages[]
-  createdAt    DateTime
-  deletedAt    DateTime
-  moderatorsId Int
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  users       Users[]
+  moderators  Moderators[]
+  posts       Posts[]
+  messages    Messages[]
+  code        String
+  createdAt   DateTime     @default(now())
+  deletedAt   DateTime?
 }
 
 model Messages {
@@ -94,7 +90,7 @@ model Messages {
   toUser        Users        @relation(fields: [toUserId], references: [id], name: "ReceivedMessages")
   contents      String
   timeSent      DateTime
-  Communities   Communities? @relation(fields: [communitiesId], references: [id])
+  Community     Communities? @relation(fields: [communitiesId], references: [id])
   communitiesId Int?
   fromUserId    Int
   toUserId      Int

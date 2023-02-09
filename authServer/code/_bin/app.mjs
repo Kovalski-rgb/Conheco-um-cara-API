@@ -13,6 +13,7 @@ import { JWT_SECURITY } from '../lib/jwt.mjs';
 import { bootstrapDB } from '../lib/database.mjs';
 import { isDev } from '../lib/env.mjs';
 import { ServerError } from '../lib/errors.mjs';
+import { debug } from '../lib/logger.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -71,5 +72,7 @@ app.use(ServerError.HANDLERS);
 app.use(express.static(`${__dirname}/../public`));
 
 bootstrapDB().catch(console.error)
+
+debug({description:`running at http://localhost:${process.env.PORT}/api-docs/`});
 
 export default app;

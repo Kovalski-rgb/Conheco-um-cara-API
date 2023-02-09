@@ -11,6 +11,7 @@ import swaggerUi from 'swagger-ui-express'
 import resolver from '../lib/esmresolver.mjs';
 import { JWT_SECURITY } from '../lib/jwt.mjs';
 import { isDev } from '../lib/env.mjs';
+import { debug } from '../lib/logger.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -68,5 +69,7 @@ app.use(OpenApiValidator.middleware({
 
 // serverErrors
 app.use(express.static(`${__dirname}/../public`));
+
+debug({description:`running at http://localhost:${process.env.PORT}/api-docs/`});
 
 export default app;

@@ -6,7 +6,7 @@
     "start": "nodemon code/_bin/www.mjs"
   },
   "dependencies": {
-    "@prisma/client": "^4.9.0",
+    "@prisma/client": "^4.10.0",
     "axios": "^1.2.5",
     "bcrypt": "^5.1.0",
     "chalk": "^5.2.0",
@@ -26,6 +26,6 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
-    "prisma": "^4.9.0"
+    "prisma": "^4.10.0"
   }
 }
