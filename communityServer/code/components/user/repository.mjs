@@ -1,15 +1,28 @@
 import { prisma } from "../../lib/database.mjs";
 
+
+// ------------------------- get commands
+export async function getAllCommunities() {
+	return await prisma.communities.findMany();
+}
+
 export async function getAllIds() {
-	const users = await prisma.users.findMany({
+	return await prisma.users.findMany({
 		select: {
 			id: true,
 		},
 	});
+}
+
+export async function getAllCommunityUsers(communityId) {
+	const users = await prisma.communities.findMany({
+		where: { id: parseInt(communityId) },
+		select: { users: true }
+	});
 	console.log(users);
 	return users;
 }
-
+// ------------------------- register commands
 export async function registerCommunity({ name, description }) {
 	const exists = await prisma.communities.findFirst({
 		where: {
@@ -26,12 +39,32 @@ export async function registerCommunity({ name, description }) {
 	return true;
 }
 
+export async function registerNewCommunityUser(communityName, userId) {
+	const community = await prisma.communities.findFirst({
+		where: { name: communityName },
+		select: { id: true }
+	});
+
+	if(!community) return false;
+
+	await prisma.users.update({
+		where: { id: userId },
+		data: {
+			Communities: {
+				connect: { id: parseInt(community.id) }
+			}
+		}
+	});
+	return true;
+}
+
 export async function registerNewModerator(communityName, userId) {
 	const community = await prisma.communities.findFirst({
 		where: {
 			name: communityName
 		}
 	});
+	if(!community) return false;
 	await prisma.moderators.create({
 		data: {
 			users: {
@@ -42,6 +75,7 @@ export async function registerNewModerator(communityName, userId) {
 			}
 		}
 	});
+	return true;
 }
 
 export async function registerUserId(id) {
