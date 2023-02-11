@@ -22,7 +22,7 @@ model Products {
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
   active      Boolean
-  Posts       Posts[]
+  posts       Posts[]
 }
 
 model Services {
@@ -37,18 +37,18 @@ model Services {
   createdAt   DateTime  @default(now())
   deletedAt   DateTime?
   active      Boolean
-  Posts       Posts[]
+  posts       Posts[]
 }
 
 model Users {
   id               Int           @id
   products         Products[]
   services         Services[]
-  Posts            Posts[]
-  Communities      Communities[]
-  SentMessages     Messages[]    @relation("SentMessages")
-  ReceivedMessages Messages[]    @relation("ReceivedMessages")
-  Moderator        Moderators?   @relation(fields: [moderatorsId], references: [id])
+  posts            Posts[]
+  communities      Communities[]
+  sentMessages     Messages[]    @relation("SentMessages")
+  receivedMessages Messages[]    @relation("ReceivedMessages")
+  moderator        Moderators?   @relation(fields: [moderatorsId], references: [id])
   moderatorsId     Int?
 }
 
@@ -67,7 +67,7 @@ model Posts {
   createdAt     DateTime     @default(now())
   deletedAt     DateTime?
   active        Boolean
-  Community     Communities? @relation(fields: [communitiesId], references: [id])
+  community     Communities? @relation(fields: [communitiesId], references: [id])
   communitiesId Int?
 }
 
@@ -90,7 +90,7 @@ model Messages {
   toUser        Users        @relation(fields: [toUserId], references: [id], name: "ReceivedMessages")
   contents      String
   timeSent      DateTime
-  Community     Communities? @relation(fields: [communitiesId], references: [id])
+  community     Communities? @relation(fields: [communitiesId], references: [id])
   communitiesId Int?
   fromUserId    Int
   toUserId      Int
@@ -99,5 +99,5 @@ model Messages {
 model Moderators {
   id          Int           @id @default(autoincrement())
   users       Users[]
-  Communities Communities[]
+  communities Communities[]
 }

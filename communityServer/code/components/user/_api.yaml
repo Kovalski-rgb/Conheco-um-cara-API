@@ -37,7 +37,31 @@ components:
           example: "(Optional) This community will serve as an example!"
       required: 
         - name
-      
+    
+    communityName:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 30
+          example: "The Example Community"
+
+    communityParams:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 30
+          example: "The Example Community"
+        code:
+          type: string
+          minLength: 6
+          maxLength: 6
+          example: "a1b2c3"
+
+
   
   parameters:
     Id:

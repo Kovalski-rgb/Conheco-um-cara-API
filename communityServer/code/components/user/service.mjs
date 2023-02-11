@@ -1,22 +1,51 @@
-import { getAllIds, registerCommunity, registerNewModerator, registerUserId, getAllCommunities, getAllCommunityUsers, registerNewCommunityUser } from "./repository.mjs";
+import { forbidden } from "../../lib/errors.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator } from "./repository.mjs";
 
 export async function getAllUserIds() {
-    return await getAllIds();
+    return await getAllIdsFromUsers();
 }
 
 export async function createCommunity(userId, { name, description }) {
-    if (await registerUserId(userId))
-        if (await registerCommunity({ name, description }))
-            if (await registerNewModerator(name, userId))
-                if (await registerNewCommunityUser(name, userId))
-                    return true
+    await registerUserId(userId)
+    if (await registerCommunity({ name, description }))
+        if (await registerNewModerator(name, userId))
+            if (await registerNewCommunityUser(name, userId))
+                return true
     return false
 }
 
-export async function listEveryComunityUser(communityId) {
-    return await getAllCommunityUsers(communityId);
+export async function listEveryUserFromCommunity(communityId) {
+    return await getAllUsersFromCommunity(communityId);
 }
 
-export async function listEveryComunities() {
+export async function listEveryComunity() {
     return await getAllCommunities();
+}
+
+export async function listEveryComunityFromUser(id) {
+    return await getAllComunitiesFromUser(id);
+}
+
+export async function enterCommunity(userId, { name, code }) {
+    const exist = await checkCommunityCode(name, code);
+    if (exist) {
+        if (!await checkIsUserAlreadyRegisteredInsideCommunity(name, userId)) {
+            await registerNewCommunityUser(name, userId);
+            return true;
+        }
+    }
+    return false;
+}
+
+export async function removeUserFromCommunity(userId, communityName) {
+    if (await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId)) {
+        console.log("registered");
+        return await deleteUserInsideCommunity(communityName, userId);
+    }
+    if (await checkIfUserIsModerator(communityName, userId)) {
+        console.log("mod");
+        return await deleteUserInsideCommunity(communityName, userId);
+    }
+    console.log("get out");
+    return false;
 }
