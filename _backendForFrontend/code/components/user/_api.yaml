@@ -5,12 +5,6 @@ tags:
     description: User profile information
   - name: Misc
     description: Extra routes
-  - name: Community
-    description: Community CRUD routes
-  - name: Users
-    description: Community users routes
-  - name: Testing
-    description: Temporary testing routes    
 
 components:
   schemas:
