@@ -4,9 +4,7 @@ import { prisma } from "../../lib/database.mjs";
 // ------------------------- get functions
 export async function getAllCommunities() {
 	const communities = await prisma.communities.findMany();
-	communities.map(c => {
-		delete c.code;
-	});
+	communities.map(c => delete c.code);
 	return communities;
 }
 
@@ -34,6 +32,27 @@ export async function getAllComunitiesFromUser(id) {
 	if (userCommunities.length === 0) return [];
 	let communities = userCommunities[0].communities;
 	return communities;
+}
+
+export async function getAllModeratorsFromCommunity(communityName) {
+	const moderatorObject = await prisma.communities.findFirst({
+		where: { name: communityName },
+		select: {
+			moderators: true
+		}
+	});
+	moderatorObject.moderators.map(mods => {
+		delete mods.id;
+		delete mods.communitiesId;
+	});
+	return moderatorObject.moderators;
+}
+
+export async function getCommunityId(communityName) {
+	return await prisma.communities.findFirst({
+		where: { name: communityName },
+		select: { id: true }
+	});
 }
 
 // ------------------------- register functions
@@ -132,6 +151,18 @@ export async function deleteUserInsideCommunity(communityName, userId) {
 	return false
 }
 
+export async function deleteCommunity(communityName) {
+	const community = await getCommunityId(communityName);
+	await prisma.moderators.deleteMany({
+		where: {communitiesId: community.id }
+	});
+	const succeded = await prisma.communities.delete({
+		where: { ...community }
+	});
+	return succeded;
+}
+
+
 // ------------------------- check functions
 export async function checkCommunityCode(name, code) {
 	const exists = await prisma.communities.findFirst({
@@ -143,27 +174,20 @@ export async function checkCommunityCode(name, code) {
 
 export async function checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId) {
 	const communities = await getAllComunitiesFromUser(userId);
-	for(let i = 0; i < communities.length; i++){
-		if(communities[i].name === communityName){
-			return true;
-		}
-	}
+	communities.map(c => {
+		if (c.name === communityName)
+			return true
+	});
 	return false;
 }
 
 export async function checkIfUserIsModerator(communityName, userId) {
-	const isModerator = await prisma.communities.findFirst({
-		where: {
-			name: communityName,
-			moderators: {
-				some: {
-					id: userId
-				}
-			}
+	const moderatorList = await getAllModeratorsFromCommunity(communityName);
+	for (let i = 0; i < moderatorList.length; i++) {
+		if (moderatorList[i].usersId === userId) {
+			return true;
 		}
-	});
-	console.log(isModerator);
-	if (isModerator) return true;
+	}
 	return false;
 }
 

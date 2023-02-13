@@ -1,5 +1,5 @@
 import { forbidden } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -39,13 +39,17 @@ export async function enterCommunity(userId, { name, code }) {
 
 export async function removeUserFromCommunity(userId, communityName) {
     if (await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId)) {
-        console.log("registered");
         return await deleteUserInsideCommunity(communityName, userId);
     }
     if (await checkIfUserIsModerator(communityName, userId)) {
-        console.log("mod");
         return await deleteUserInsideCommunity(communityName, userId);
     }
-    console.log("get out");
+    return false;
+}
+
+export async function deleteTheCommunity(userId, communityName){
+    if (await checkIfUserIsModerator(communityName, userId)) {
+        return await deleteCommunity(communityName);
+    }
     return false;
 }

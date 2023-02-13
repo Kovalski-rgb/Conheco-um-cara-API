@@ -1,5 +1,5 @@
 import axios from "axios"
-import { createCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, removeUserFromCommunity } from "./service.mjs";
+import { createCommunity, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, removeUserFromCommunity } from "./service.mjs";
 
 /**
  * @openapi
@@ -158,6 +158,40 @@ export async function leaveCommunity(req, res, _) {
 export async function enterOnCommunity(req, res, _) {
     const success = await enterCommunity(req.user.id, req.body);
     return success ? res.sendStatus(200) : res.sendStatus(403);
+}
+
+/**
+ * @openapi
+ * /community/delete:
+ *  delete:
+ *    summary: "Request to delete a community"
+ *    
+ *    tags:
+ *       - "Community"
+ * 
+ *    operationId: deleteCommunity
+ *    x-eov-operation-handler: user/router
+ * 
+ *    requestBody:
+ *      description: Community information
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/communityName'
+ *
+ *    responses:
+ *      '200':
+ *        description: "Deleted the community"
+ *      '401':
+ *        description: "User does not have moderator permission inside the community"
+ * 
+ *    security:
+ *      - JWT: ['USER']
+ */
+export async function deleteCommunity(req, res, _) {
+    const success = await deleteTheCommunity(req.user.id, req.body.name);
+    return success ? res.sendStatus(200) : res.sendStatus(401);
 }
 
 /**
