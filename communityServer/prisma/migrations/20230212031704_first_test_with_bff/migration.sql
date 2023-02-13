@@ -7,8 +7,8 @@ CREATE TABLE `Products` (
     `image` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
     `productType` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL,
-    `deletedAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `deletedAt` DATETIME(3) NULL,
     `active` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `Products_userId_key`(`userId`),
@@ -24,8 +24,8 @@ CREATE TABLE `Services` (
     `image` VARCHAR(191) NOT NULL,
     `userId` INTEGER NOT NULL,
     `productType` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL,
-    `deletedAt` DATETIME(3) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `deletedAt` DATETIME(3) NULL,
     `active` BOOLEAN NOT NULL,
 
     UNIQUE INDEX `Services_userId_key`(`userId`),
@@ -34,12 +34,7 @@ CREATE TABLE `Services` (
 
 -- CreateTable
 CREATE TABLE `Users` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NOT NULL,
-    `telephone` VARCHAR(191) NOT NULL,
-    `isAdmin` BOOLEAN NOT NULL,
-    `communitiesId` INTEGER NULL,
+    `id` INTEGER NOT NULL,
     `moderatorsId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
@@ -55,7 +50,7 @@ CREATE TABLE `Posts` (
     `productsId` INTEGER NULL,
     `servicesId` INTEGER NULL,
     `updatedAt` DATETIME(3) NULL,
-    `createdAt` DATETIME(3) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `deletedAt` DATETIME(3) NULL,
     `active` BOOLEAN NOT NULL,
     `communitiesId` INTEGER NULL,
@@ -67,9 +62,10 @@ CREATE TABLE `Posts` (
 CREATE TABLE `Communities` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `createdAt` DATETIME(3) NOT NULL,
-    `deletedAt` DATETIME(3) NOT NULL,
-    `moderatorsId` INTEGER NOT NULL,
+    `description` VARCHAR(191) NULL,
+    `code` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `deletedAt` DATETIME(3) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -93,14 +89,29 @@ CREATE TABLE `Moderators` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `_CommunitiesToUsers` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_CommunitiesToUsers_AB_unique`(`A`, `B`),
+    INDEX `_CommunitiesToUsers_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `_CommunitiesToModerators` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_CommunitiesToModerators_AB_unique`(`A`, `B`),
+    INDEX `_CommunitiesToModerators_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Products` ADD CONSTRAINT `Products_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Services` ADD CONSTRAINT `Services_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Users` ADD CONSTRAINT `Users_communitiesId_fkey` FOREIGN KEY (`communitiesId`) REFERENCES `Communities`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Users` ADD CONSTRAINT `Users_moderatorsId_fkey` FOREIGN KEY (`moderatorsId`) REFERENCES `Moderators`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
@@ -118,9 +129,6 @@ ALTER TABLE `Posts` ADD CONSTRAINT `Posts_servicesId_fkey` FOREIGN KEY (`service
 ALTER TABLE `Posts` ADD CONSTRAINT `Posts_communitiesId_fkey` FOREIGN KEY (`communitiesId`) REFERENCES `Communities`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Communities` ADD CONSTRAINT `Communities_moderatorsId_fkey` FOREIGN KEY (`moderatorsId`) REFERENCES `Moderators`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Messages` ADD CONSTRAINT `Messages_fromUserId_fkey` FOREIGN KEY (`fromUserId`) REFERENCES `Users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -128,3 +136,15 @@ ALTER TABLE `Messages` ADD CONSTRAINT `Messages_toUserId_fkey` FOREIGN KEY (`toU
 
 -- AddForeignKey
 ALTER TABLE `Messages` ADD CONSTRAINT `Messages_communitiesId_fkey` FOREIGN KEY (`communitiesId`) REFERENCES `Communities`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_CommunitiesToUsers` ADD CONSTRAINT `_CommunitiesToUsers_A_fkey` FOREIGN KEY (`A`) REFERENCES `Communities`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_CommunitiesToUsers` ADD CONSTRAINT `_CommunitiesToUsers_B_fkey` FOREIGN KEY (`B`) REFERENCES `Users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_CommunitiesToModerators` ADD CONSTRAINT `_CommunitiesToModerators_A_fkey` FOREIGN KEY (`A`) REFERENCES `Communities`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_CommunitiesToModerators` ADD CONSTRAINT `_CommunitiesToModerators_B_fkey` FOREIGN KEY (`B`) REFERENCES `Moderators`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

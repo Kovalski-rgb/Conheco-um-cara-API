@@ -1,20 +1,10 @@
 tags:
   - name: Authentication
-    description: Authentication route.
-  - name: New User
-    description: Register new user route.
+    description: Authentication routes
   - name: Profile
-    description: User informations. Check, update and delete routes.
-  - name: Community
-    description: Check, request, leave, create and delete communities routes.
-  - name: Posts
-    description: Check, update, create and delete posts routes.
-  - name: Messages
-    description: Check and send messages routes.
-  - name: Products and Services
-    description: Check, update, create and delete products and services routes.
-  - name: Admin
-    description: Admin routes.
+    description: User profile information
+  - name: Misc
+    description: Extra routes
 
 components:
   schemas:
@@ -102,9 +92,6 @@ components:
 
   securitySchemes:
     JWT:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
       type: http
       scheme: bearer
       bearerFormat: JWT
