@@ -1,3 +1,4 @@
+import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
 import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity } from "./repository.mjs";
 
 export async function getAllUserIds() {
@@ -10,7 +11,7 @@ export async function createCommunity(userId, { name, description }) {
         if (await registerNewModerator(name, userId))
             if (await registerNewCommunityUser(name, userId))
                 return true
-    return false
+    return false;
 }
 
 export async function listEveryUserFromCommunity(communityId) {
@@ -32,8 +33,9 @@ export async function enterCommunity(userId, { name, code }) {
             await registerNewCommunityUser(name, userId);
             return true;
         }
+        ServerError.throwIf(true, "User has already joined this community!", forbidden);
     }
-    return false;
+    ServerError.throwIf(true, "No communities match name/code combination!", notFound);
 }
 
 export async function removeUserFromCommunity(userId, communityName) {
@@ -48,9 +50,13 @@ export async function removeUserFromCommunity(userId, communityName) {
 
 export async function deleteTheCommunity(userId, communityName){
     if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId))
-        return false; //404
+        ServerError.throwIf(true, "Community not found!", notFound);
     if (await checkIfUserIsModerator(communityName, userId)) {
         return await deleteCommunity(communityName);
     }
-    return false;
+    ServerError.throwIf(true, "User does not have moderator permissions!", forbidden);
+}
+
+export async function createNewCommunityPost(userId, {communityId, title, description, image, productsId, servicesId}){
+    ServerError.throwIf(true, `to be implemented`, notFound);
 }

@@ -41,12 +41,12 @@ export async function listAllCommunityUsers(req, res, _) {
  * 
  *    operationId: listAllComunityUsers
  *    x-eov-operation-handler: user/router
- 
+ *
  *    responses:
  *      '200':
- *        description: "Created a new community"
- *      '401':
- *        description: "Users without authentication cannot create or join communities"
+ *        description: "Listed all users from community successfully"
+ *      '500':
+ *        description: "Internal server error"
  *  
  *    security:
  *      - {}
@@ -148,9 +148,11 @@ export async function leaveCommunity(req, res, _) {
  *
  *    responses:
  *      '200':
- *        description: "Created a new community"
+ *        description: "Succesfully joined a community"
  *      '403':
- *        description: "Some error ocurred during the community creating"
+ *        description: "User has already joined this community"
+ *      '404':
+ *        description: "No communities match name/code combination"
  * 
  *    security:
  *      - JWT: ['USER']
@@ -183,8 +185,10 @@ export async function enterOnCommunity(req, res, _) {
  *    responses:
  *      '200':
  *        description: "Deleted the community"
- *      '401':
+ *      '403':
  *        description: "User does not have moderator permission inside the community"
+ *      '404':
+ *        description: "Community not found"
  * 
  *    security:
  *      - JWT: ['USER']
@@ -208,9 +212,9 @@ export async function deleteCommunity(req, res, _) {
  *
  *    responses:
  *      '200':
- *        description: "Created a new community"
- *      '401':
- *        description: "Users without authentication cannot create or join communities"
+ *        description: "Listed all communities successfully"
+ *      '500':
+ *        description: "Internal server error"
  * 
  *    security:
  *      - {}
@@ -234,9 +238,9 @@ export async function listAllComunities(req, res, _){
  *
  *    responses:
  *      '200':
- *        description: "Created a new community"
- *      '401':
- *        description: "Users without authentication cannot create or join communities"
+ *        description: "Listed all communities that user belongs successfully"
+ *      '500':
+ *        description: "Internal server error"
  * 
  *    security:
  *      - JWT: ['USER']
@@ -248,69 +252,34 @@ export async function listAllUserComunities(req, res, _){
 
 /**
  * @openapi
- * /test:
- *  get:
- *    summary: "test get request to another server"
- * 
- *    tags:
- *      - Testing
- *    
- *    operationId: testAxiosGet
- *    x-eov-operation-handler: user/router
- * 
- *    responses:
- *      '200':
- *        description: "New user registered successfully"
- *      '400':
- *        description: "Invalid data provided"
- *      '401':
- *        description: "Registration failed"
- * 
- *    security:
- *      - {}
- */
-export async function testAxionGet(req, res, _) {
-    const response = await axios.get(`http://localhost:3001/api/info`);
-    console.log(response.data);
-    return res.json(response.data);
-}
-
-/**
- * 
- * @openapi
- * /test:
+ * /post/create:
  *  post:
- *    summary: test axios post request
- * 
+ *    summary: "Create a new post inside community"
+ *    
  *    tags:
- *      - Testing
+ *       - "Posts"
  * 
- *    operationId: testAxiosPost
+ *    operationId: createNewPost
  *    x-eov-operation-handler: user/router
  * 
  *    requestBody:
- *      description: Test res body
+ *      description: Post data
  *      required: true
  *      content:
  *        application/json:
  *          schema:
- *            $ref: "#/components/schemas/testSchema"
- * 
+ *            $ref: '#/components/schemas/postData'
+ *
  *    responses:
  *      '200':
- *        description: "New user registered successfully"
- *      '400':
- *        description: "Invalid data provided"
- *      '401':
- *        description: "Registration failed"
+ *        description: "Created a new post"
+ *      '404':
+ *        description: "Unknown community"
  * 
  *    security:
- *      - {}
+ *      - JWT: ['USER']
  */
-export async function testAxiosPost(req, res, _){
-    console.log(req.body);
-    if(req.body){
-        return res.sendStatus(200);
-    }
-    return res.sendStatus(401);
+export async function createNewPost(req, res, _) {
+    const success = await enterCommunity(req.user.id, req.body);
+    return success ? res.sendStatus(200) : res.sendStatus(403);
 }

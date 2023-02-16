@@ -12,38 +12,16 @@ datasource db {
 
 model Products {
   id          Int       @id @default(autoincrement())
-  name        String
-  description String
-  price       Decimal   @db.Decimal(6, 2)
-  image       String
-  owner       Users     @relation(fields: [userId], references: [id])
-  userId      Int       @unique
-  productType String
-  createdAt   DateTime  @default(now())
-  deletedAt   DateTime?
-  active      Boolean
   posts       Posts[]
 }
 
 model Services {
   id          Int       @id @default(autoincrement())
-  name        String
-  description String
-  price       Decimal   @db.Decimal(6, 2)
-  image       String
-  owner       Users     @relation(fields: [userId], references: [id])
-  userId      Int       @unique
-  productType String
-  createdAt   DateTime  @default(now())
-  deletedAt   DateTime?
-  active      Boolean
   posts       Posts[]
 }
 
 model Users {
   id               Int           @id
-  products         Products[]
-  services         Services[]
   posts            Posts[]
   communities      Communities[]
   sentMessages     Messages[]    @relation("SentMessages")
@@ -55,7 +33,7 @@ model Posts {
   id            Int          @id @default(autoincrement())
   title         String
   description   String
-  image         String
+  image         String?
   creator       Users        @relation(fields: [userId], references: [id])
   userId        Int
   product       Products?    @relation(fields: [productsId], references: [id])
@@ -65,7 +43,7 @@ model Posts {
   updatedAt     DateTime?
   createdAt     DateTime     @default(now())
   deletedAt     DateTime?
-  active        Boolean
+  active        Boolean      @default(true)
   community     Communities? @relation(fields: [communitiesId], references: [id])
   communitiesId Int?
 }

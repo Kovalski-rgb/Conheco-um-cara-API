@@ -154,7 +154,7 @@ export async function deleteUserInsideCommunity(communityName, userId) {
 export async function deleteCommunity(communityName) {
 	const community = await getCommunityId(communityName);
 	await prisma.moderators.deleteMany({
-		where: {communitiesId: community.id }
+		where: { communitiesId: community.id }
 	});
 	const succeded = await prisma.communities.delete({
 		where: { ...community }
@@ -174,8 +174,8 @@ export async function checkCommunityCode(name, code) {
 
 export async function checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId) {
 	const communities = await getAllComunitiesFromUser(userId);
-	for(let i = 0; i < communities.length; i++){
-		if (communities[i].name === communityName){
+	for (let i = 0; i < communities.length; i++) {
+		if (communities[i].name === communityName) {
 			return true;
 		}
 	}
