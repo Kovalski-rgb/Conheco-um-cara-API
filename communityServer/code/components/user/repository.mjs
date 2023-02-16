@@ -54,6 +54,22 @@ export async function getcommunityById(id) {
 	});
 }
 
+export async function getAllPostsFromCommunity(communityId) {
+	const allPosts = await prisma.communities.findFirst({
+		where: {
+			id: communityId,
+		},
+		select: {
+			posts: true
+		}
+	});
+	let posts = [];
+	for(let i = 0; i < allPosts.posts.length; i++){
+		posts.push(allPosts.posts[i]);
+	}
+	return posts;
+}
+
 // ------------------------- register functions
 export async function registerCommunity({ name, description }) {
 	let code = randomCodeGenerator(6);
@@ -157,30 +173,23 @@ export async function createNewPost(userId, { communityId, title, description, i
 			connect: { id: servicesId }
 		}
 	}
-	console.log('got to checkpoint 1')
 	if (productsId) {
 		const product = await checkIfProductExists(productsId);
 		console.log(product);
 		if (!product) {
-			console.log('got to checkpoint 1-c')
 			await registerNewProduct(productsId, userId);
 		}
 	} else {
-		console.log('got to checkpoint 1-r')
 		delete data.product;
 	}
-	console.log('got to checkpoint 2')
 	if (servicesId) {
 		const service = await checkIfServiceExists(servicesId);
 		if (!service) {
-			console.log('got to checkpoint 2-c')
 			await registerNewService(servicesId, userId);
 		}
 	} else {
-		console.log('got to checkpoint 2-r')
 		delete data.service;
 	}
-	console.log('got to checkpoint 3')
 	return await prisma.posts.create({
 		data: data
 	})

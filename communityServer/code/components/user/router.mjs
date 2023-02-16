@@ -1,4 +1,4 @@
-import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity } from "./service.mjs";
+import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities } from "./service.mjs";
 
 /**
  * @openapi
@@ -50,8 +50,8 @@ export async function listAllCommunityUsers(req, res, _) {
  *    security:
  *      - {}
  */
-export async function listAllComunityUsers(req, res, _){
-    const users = await listEveryUserFromCommunity(req.params.Id); 
+export async function listAllComunityUsers(req, res, _) {
+    const users = await listEveryUserFromCommunity(req.params.Id);
     return res.json(users);
 }
 
@@ -208,8 +208,8 @@ export async function deleteCommunity(req, res, _) {
  *    security:
  *      - {}
  */
-export async function listAllComunities(req, res, _){
-    const communities = await listEveryComunity(); 
+export async function listAllComunities(req, res, _) {
+    const communities = await listEveryComunity();
     return res.json(communities);
 }
 
@@ -234,8 +234,8 @@ export async function listAllComunities(req, res, _){
  *    security:
  *      - JWT: ['USER']
  */
-export async function listAllUserComunities(req, res, _){
-    const communities = await listEveryComunityFromUser(req.user.id); 
+export async function listAllUserComunities(req, res, _) {
+    const communities = await listEveryComunityFromUser(req.user.id);
     return res.json(communities);
 }
 
@@ -270,6 +270,31 @@ export async function listAllUserComunities(req, res, _){
  */
 export async function createNewPost(req, res, _) {
     const success = await createNewCommunityPost(req.user.id, req.body);
-    console.log(success);
     return success ? res.sendStatus(200) : res.sendStatus(403);
+}
+
+/**
+ * @openapi
+ * /post:
+ *  get:
+ *    summary: "Get all posts from all communities that user is in"
+ *    
+ *    tags:
+ *       - "Posts"
+ * 
+ *    operationId: getAllPosts
+ *    x-eov-operation-handler: user/router
+ *
+ *    responses:
+ *      '200':
+ *        description: "Gets all posts from communities"
+ *      '404':
+ *        description: "Unknown community"
+ * 
+ *    security:
+ *      - JWT: ['USER']
+ */
+export async function getAllPosts(req, res, _) {
+    const success = await getAllPostsFromAllUserCommunities(req.user.id);
+    return success ? res.json(success) : res.sendStatus(403);
 }
