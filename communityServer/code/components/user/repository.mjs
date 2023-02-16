@@ -174,11 +174,11 @@ export async function checkCommunityCode(name, code) {
 
 export async function checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId) {
 	const communities = await getAllComunitiesFromUser(userId);
-	communities.map(c => {
-		if (c.name === communityName)
-			return true
-	});
-	return false;
+	for(let i = 0; i < communities.length; i++){
+		if (communities[i].name === communityName){
+			return true;
+		}
+	}
 }
 
 export async function checkIfUserIsModerator(communityName, userId) {

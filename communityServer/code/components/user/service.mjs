@@ -1,4 +1,3 @@
-import { forbidden } from "../../lib/errors.mjs";
 import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity } from "./repository.mjs";
 
 export async function getAllUserIds() {
@@ -48,6 +47,8 @@ export async function removeUserFromCommunity(userId, communityName) {
 }
 
 export async function deleteTheCommunity(userId, communityName){
+    if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId))
+        return false; //404
     if (await checkIfUserIsModerator(communityName, userId)) {
         return await deleteCommunity(communityName);
     }
