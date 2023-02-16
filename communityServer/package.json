@@ -3,12 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "nodemon code/_bin/www.mjs"
+    "start": "nodemon code/_bin/www.mjs",
+    "test": "mocha"
   },
   "dependencies": {
     "@prisma/client": "^4.10.0",
     "axios": "^1.2.5",
     "bcrypt": "^5.1.0",
+    "chai": "^4.3.7",
     "chalk": "^5.2.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -18,6 +20,7 @@
     "express-openapi-validator": "^5.0.1",
     "http-errors": "~1.6.3",
     "jwt-simple": "^0.5.6",
+    "mocha": "^10.2.0",
     "morgan": "~1.9.1",
     "mysql2": "^3.1.0",
     "pjson": "^1.0.9",

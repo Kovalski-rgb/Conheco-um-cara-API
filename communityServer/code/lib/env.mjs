@@ -17,3 +17,19 @@ export function isStaging(){
 export function getServerPort(){
     return process.env.PORT;
 }
+
+export function getDummy1Data(){
+    return {
+        name: "dummy1",
+        email: "dummy1@email.com",
+        password: "DUmmy-01"
+    }
+}
+
+export function getDummy2Data(){
+    return {
+        name: "dummy2",
+        email: "dummy2@email.com",
+        password: "DUmmy-02"
+    }
+}
