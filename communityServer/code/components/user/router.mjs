@@ -270,5 +270,6 @@ export async function listAllUserComunities(req, res, _){
  */
 export async function createNewPost(req, res, _) {
     const success = await createNewCommunityPost(req.user.id, req.body);
+    console.log(success);
     return success ? res.sendStatus(200) : res.sendStatus(403);
 }

@@ -11,13 +11,17 @@ datasource db {
 }
 
 model Products {
-  id          Int       @id @default(autoincrement())
-  posts       Posts[]
+  id      Int     @id 
+  user    Users   @relation(fields: [usersId], references: [id])
+  posts   Posts[]
+  usersId Int
 }
 
 model Services {
-  id          Int       @id @default(autoincrement())
-  posts       Posts[]
+  id      Int     @id 
+  user    Users   @relation(fields: [usersId], references: [id])
+  posts   Posts[]
+  usersId Int
 }
 
 model Users {
@@ -27,6 +31,8 @@ model Users {
   sentMessages     Messages[]    @relation("SentMessages")
   receivedMessages Messages[]    @relation("ReceivedMessages")
   moderator        Moderators[]
+  Products         Products[]
+  Services         Services[]
 }
 
 model Posts {
@@ -45,7 +51,7 @@ model Posts {
   deletedAt     DateTime?
   active        Boolean      @default(true)
   community     Communities? @relation(fields: [communitiesId], references: [id])
-  communitiesId Int?
+  communitiesId Int
 }
 
 model Communities {

@@ -141,8 +141,85 @@ export async function deleteCommunity(communityId) {
 	return succeded;
 }
 
+export async function createNewPost(userId, { communityId, title, description, image, productsId, servicesId }) {
+	const data = {
+		...{ title, description, image },
+		creator: {
+			connect: { id: userId }
+		},
+		community: {
+			connect: { id: communityId }
+		},
+		product: {
+			connect: { id: productsId }
+		},
+		service: {
+			connect: { id: servicesId }
+		}
+	}
+	console.log('got to checkpoint 1')
+	if (productsId) {
+		const product = await checkIfProductExists(productsId);
+		console.log(product);
+		if (!product) {
+			console.log('got to checkpoint 1-c')
+			await registerNewProduct(productsId, userId);
+		}
+	} else {
+		console.log('got to checkpoint 1-r')
+		delete data.product;
+	}
+	console.log('got to checkpoint 2')
+	if (servicesId) {
+		const service = await checkIfServiceExists(servicesId);
+		if (!service) {
+			console.log('got to checkpoint 2-c')
+			await registerNewService(servicesId, userId);
+		}
+	} else {
+		console.log('got to checkpoint 2-r')
+		delete data.service;
+	}
+	console.log('got to checkpoint 3')
+	return await prisma.posts.create({
+		data: data
+	})
+}
+
+export async function registerNewProduct(id, userId) {
+	return await prisma.products.create({
+		data: {
+			id: id,
+			user: { connect: { id: userId } }
+		}
+	});
+}
+
+export async function registerNewService(id, userId) {
+	return await prisma.services.create({
+		data: {
+			id: id,
+			user: { connect: { id: userId } }
+		}
+	});
+}
 
 // ------------------------- check functions
+
+
+export async function checkIfServiceExists(serviceId) {
+	return await prisma.services.findFirst({
+		where: { id: parseInt(serviceId) },
+		select: { id: true }
+	});
+}
+
+export async function checkIfProductExists(productId) {
+	return await prisma.products.findFirst({
+		where: { id: parseInt(productId) },
+		select: { id: true }
+	});
+}
 
 export async function checkIfUserExists(id) {
 	return await prisma.users.findFirst({

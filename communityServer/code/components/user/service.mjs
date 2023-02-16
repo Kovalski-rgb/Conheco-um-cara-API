@@ -1,5 +1,5 @@
 import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -62,5 +62,5 @@ export async function deleteTheCommunity(userId, communityId) {
 export async function createNewCommunityPost(userId, { communityId, title, description, image, productsId, servicesId }) {
     if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId))
         ServerError.throwIf(true, "Community not found!", notFound);
-    ServerError.throwIf(true, `to be implemented`, notFound);
+    return await createNewPost(userId, { communityId, title, description, image, productsId, servicesId });
 }
