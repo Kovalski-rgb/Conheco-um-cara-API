@@ -1,9 +1,5 @@
 import { newAxios } from "../../lib/network.mjs";
 
-export async function getAllUserIds() {
-  return await getAllIdsFromUsers();
-}
-
 export async function createCommunity(userId, req) {
   const axios = newAxios();
 
@@ -27,43 +23,55 @@ export async function createCommunity(userId, req) {
     }
   );
   return response.data;
-
 }
 
-export async function listEveryUserFromCommunity(communityId) {
-  return await getAllUsersFromCommunity(communityId);
+export async function deleteTheCommunity(req){
+
+  const axios = newAxios();
+  const response = await axios.delete(
+    "http://localhost:3003/api/community/delete",
+    {
+      headers: { Authorization: req.header("Authorization") },
+      data: { ... req.body }
+    }
+  );
+  return response.status;
 }
 
 export async function listEveryComunity() {
-  return await getAllCommunities();
+  const axios = newAxios();
+  const response = await axios.get("http://localhost:3003/api/community/all");
+  return response.data;
 }
 
-export async function listEveryComunityFromUser(id) {
-  return await getAllComunitiesFromUser(id);
+export async function listEveryComunityFromUser(req) {
+  const axios = newAxios();
+  const response = await axios.get("http://localhost:3003/api/community/me", {
+    headers: { Authorization: req.header("Authorization") },
+    id: req.user.id
+  });
+  return response.data;
 }
 
-export async function enterCommunity(userId, { name, code }) {
-  const exist = await checkCommunityCode(name, code);
-  if (exist) {
-    if (!(await checkIsUserAlreadyRegisteredInsideCommunity(name, userId))) {
-      await registerNewCommunityUser(name, userId);
-      return true;
+export async function enterCommunity(req) {
+  const axios = newAxios();
+  
+  axios.interceptors.request.use(
+    config => {
+      config.headers.Authorization= req.header("Authorization");
+      return config;
+    },
+    error => {
+      return Promise.reject(error);
     }
-  }
-  return false;
-}
+  );
 
-export async function removeUserFromCommunity(userId, communityName) {
-  if (
-    await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId)
-  ) {
-    console.log("registered");
-    return await deleteUserInsideCommunity(communityName, userId);
+
+  const response = await axios.post("http://localhost:3003/api/community/join",
+  {
+    headers: { Authorization: req.header("Authorization") },
+    data: { ... req.body }
   }
-  if (await checkIfUserIsModerator(communityName, userId)) {
-    console.log("mod");
-    return await deleteUserInsideCommunity(communityName, userId);
-  }
-  console.log("get out");
-  return false;
+);
+return response.status;
 }
