@@ -1,5 +1,5 @@
 import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -7,10 +7,12 @@ export async function getAllUserIds() {
 
 export async function createCommunity(userId, { name, description }) {
     await registerUserId(userId)
-    if (await registerCommunity({ name, description }))
-        if (await registerNewModerator(name, userId))
-            if (await registerNewCommunityUser(name, userId))
-                return true
+    const community = await registerCommunity({ name, description });
+    
+    if (await registerNewModerator(community.id, userId)) {
+        await registerNewCommunityUser(community.id, userId);
+        return true
+    }
     return false;
 }
 
@@ -27,10 +29,11 @@ export async function listEveryComunityFromUser(id) {
 }
 
 export async function enterCommunity(userId, { name, code }) {
-    const exist = await checkCommunityCode(name, code);
+    const community = await getCommunityByNameAndCode(name, code);
+    const exist = await checkCommunityCode(community.id, code);
     if (exist) {
-        if (!await checkIsUserAlreadyRegisteredInsideCommunity(name, userId)) {
-            await registerNewCommunityUser(name, userId);
+        if (!await checkIsUserAlreadyRegisteredInsideCommunity(community.id, userId)) {
+            await registerNewCommunityUser(community.id, userId);
             return true;
         }
         ServerError.throwIf(true, "User has already joined this community!", forbidden);
@@ -38,25 +41,26 @@ export async function enterCommunity(userId, { name, code }) {
     ServerError.throwIf(true, "No communities match name/code combination!", notFound);
 }
 
-export async function removeUserFromCommunity(userId, communityName) {
-    if (await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId)) {
-        return await deleteUserInsideCommunity(communityName, userId);
+export async function leaveFromCommunity(userId, communityId) {
+    if (await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId)) {
+        return await deleteUserInsideCommunity(communityId, userId);
     }
-    if (await checkIfUserIsModerator(communityName, userId)) {
-        return await deleteUserInsideCommunity(communityName, userId);
-    }
-    return false;
+    ServerError.throwIf(true, 'No communities found for that user', notFound);
 }
 
-export async function deleteTheCommunity(userId, communityName){
-    if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId))
+
+
+export async function deleteTheCommunity(userId, communityId) {
+    if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId))
         ServerError.throwIf(true, "Community not found!", notFound);
-    if (await checkIfUserIsModerator(communityName, userId)) {
-        return await deleteCommunity(communityName);
+    if (await checkIfUserIsModerator(communityId, userId)) {
+        return await deleteCommunity(communityId);
     }
     ServerError.throwIf(true, "User does not have moderator permissions!", forbidden);
 }
 
-export async function createNewCommunityPost(userId, {communityId, title, description, image, productsId, servicesId}){
+export async function createNewCommunityPost(userId, { communityId, title, description, image, productsId, servicesId }) {
+    if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId))
+        ServerError.throwIf(true, "Community not found!", notFound);
     ServerError.throwIf(true, `to be implemented`, notFound);
 }

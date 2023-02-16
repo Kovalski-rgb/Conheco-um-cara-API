@@ -1,5 +1,4 @@
-import axios from "axios"
-import { createCommunity, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, removeUserFromCommunity } from "./service.mjs";
+import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity } from "./service.mjs";
 
 /**
  * @openapi
@@ -52,7 +51,7 @@ export async function listAllCommunityUsers(req, res, _) {
  *      - {}
  */
 export async function listAllComunityUsers(req, res, _){
-    const users = await listEveryUserFromCommunity(req.params.id); 
+    const users = await listEveryUserFromCommunity(req.params.Id); 
     return res.json(users);
 }
 
@@ -92,7 +91,7 @@ export async function createNewCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/leave:
+ * /community/leave/{id}:
  *  post:
  *    summary: "Request to leave a community"
  *    tags:
@@ -101,13 +100,8 @@ export async function createNewCommunity(req, res, _) {
  *    operationId: leaveCommunity
  *    x-eov-operation-handler: user/router
  * 
- *    requestBody:
- *      description: Login information
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/communityName'
+ *    parameters:
+ *       - $ref: "#/components/parameters/Id"
  *
  *    responses:
  *      '200':
@@ -121,7 +115,7 @@ export async function createNewCommunity(req, res, _) {
  *      - JWT: ['USER']
  */
 export async function leaveCommunity(req, res, _) {
-    const success = await removeUserFromCommunity(req.user.id, req.body.name);
+    const success = await leaveFromCommunity(req.user.id, req.params.id);
     console.log(success);
     return success ? res.sendStatus(200) : res.sendStatus(404);
 }
@@ -164,7 +158,7 @@ export async function enterOnCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/delete:
+ * /community/delete/{id}:
  *  delete:
  *    summary: "Request to delete a community"
  *    
@@ -174,13 +168,8 @@ export async function enterOnCommunity(req, res, _) {
  *    operationId: deleteCommunity
  *    x-eov-operation-handler: user/router
  * 
- *    requestBody:
- *      description: Community information
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/communityName'
+ *    parameters:
+ *       - $ref: "#/components/parameters/Id"
  *
  *    responses:
  *      '200':
@@ -194,7 +183,7 @@ export async function enterOnCommunity(req, res, _) {
  *      - JWT: ['USER']
  */
 export async function deleteCommunity(req, res, _) {
-    const success = await deleteTheCommunity(req.user.id, req.body.name);
+    const success = await deleteTheCommunity(req.user.id, req.params.id);
     return success ? res.sendStatus(200) : res.sendStatus(401);
 }
 
@@ -280,6 +269,6 @@ export async function listAllUserComunities(req, res, _){
  *      - JWT: ['USER']
  */
 export async function createNewPost(req, res, _) {
-    const success = await enterCommunity(req.user.id, req.body);
+    const success = await createNewCommunityPost(req.user.id, req.body);
     return success ? res.sendStatus(200) : res.sendStatus(403);
 }

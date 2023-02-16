@@ -34,9 +34,9 @@ export async function getAllComunitiesFromUser(id) {
 	return communities;
 }
 
-export async function getAllModeratorsFromCommunity(communityName) {
+export async function getAllModeratorsFromCommunity(communityId) {
 	const moderatorObject = await prisma.communities.findFirst({
-		where: { name: communityName },
+		where: { id: parseInt(communityId) },
 		select: {
 			moderators: true
 		}
@@ -48,68 +48,52 @@ export async function getAllModeratorsFromCommunity(communityName) {
 	return moderatorObject.moderators;
 }
 
-export async function getCommunityId(communityName) {
+export async function getcommunityById(id) {
 	return await prisma.communities.findFirst({
-		where: { name: communityName },
-		select: { id: true }
+		where: { ...id }
 	});
 }
 
 // ------------------------- register functions
 export async function registerCommunity({ name, description }) {
-	const exists = await prisma.communities.findFirst({
-		where: {
-			name
-		}
-	});
-	if (exists) return false;
 	let code = randomCodeGenerator(6);
-	await prisma.communities.create({
+
+	while (await getCommunityByNameAndCode(name, code)) {
+		code = randomCodeGenerator(6);
+	}
+
+	return await prisma.communities.create({
 		data: {
 			...{ name, description, code }
 		}
 	});
-	return true;
 }
 
-export async function registerNewCommunityUser(communityName, userId) {
-	const community = await prisma.communities.findFirst({
-		where: { name: communityName },
-		select: { id: true }
-	});
-	if (!community) return false;
+export async function registerNewCommunityUser(communityId, userId) {
+	const exists = await checkIfUserExists(userId);
+	if (!exists) await registerUserId(userId);
 
-
-	const registeredUser = await prisma.users.findFirst({
-		where: { id: userId }
-	});
-	if (!registeredUser) registerUserId(userId);
-
-	await prisma.users.update({
+	return await prisma.users.update({
 		where: { id: userId },
 		data: {
 			communities: {
-				connect: { id: parseInt(community.id) }
+				connect: { id: parseInt(communityId) }
 			}
 		}
 	});
-	return true;
 }
 
-export async function registerNewModerator(communityName, userId) {
-	const community = await prisma.communities.findFirst({
-		where: {
-			name: communityName
-		}
-	});
-	if (!community) return false;
+export async function registerNewModerator(communityId, userId) {
+	const exists = checkIfCommunityExists(communityId);
+	if (!exists) return false;
+
 	await prisma.moderators.create({
 		data: {
 			users: {
 				connect: { id: userId }
 			},
 			communities: {
-				connect: { id: community.id }
+				connect: { id: communityId }
 			}
 		}
 	});
@@ -132,13 +116,9 @@ export async function registerUserId(id) {
 	return true;
 }
 
-export async function deleteUserInsideCommunity(communityName, userId) {
-	const community = await prisma.communities.findFirst({
-		where: { name: communityName },
-		select: { id: true }
-	});
+export async function deleteUserInsideCommunity(communityId, userId) {
 	const success = await prisma.communities.update({
-		where: { id: community.id },
+		where: { id: parseInt(communityId) },
 		data: {
 			users: {
 				disconnect: {
@@ -151,38 +131,57 @@ export async function deleteUserInsideCommunity(communityName, userId) {
 	return false
 }
 
-export async function deleteCommunity(communityName) {
-	const community = await getCommunityId(communityName);
+export async function deleteCommunity(communityId) {
 	await prisma.moderators.deleteMany({
-		where: { communitiesId: community.id }
+		where: { communitiesId: parseInt(communityId) }
 	});
 	const succeded = await prisma.communities.delete({
-		where: { ...community }
+		where: { id: parseInt(communityId) }
 	});
 	return succeded;
 }
 
 
 // ------------------------- check functions
-export async function checkCommunityCode(name, code) {
-	const exists = await prisma.communities.findFirst({
+
+export async function checkIfUserExists(id) {
+	return await prisma.users.findFirst({
+		where: { id }
+	}) ? true : false;
+}
+
+export async function checkIfCommunityExists(id) {
+	return await prisma.communities.findFirst({
+		where: { id }
+	}) ? true : false;
+}
+
+export async function getCommunityByNameAndCode(name, code) {
+	return await prisma.communities.findFirst({
 		where: { name, code }
 	});
-	if (exists) return true;
+}
+
+export async function checkCommunityCode(id, code) {
+	const exists = await prisma.communities.findFirst({
+		where: { id, code }
+	});
+	return exists ? true : false;
+}
+
+export async function checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId) {
+	const communities = await getAllComunitiesFromUser(userId);
+	for (let i = 0; i < communities.length; i++) {
+		if (communities[i].id == communityId) {
+			return true;
+		}
+		console.log(`${userId} have ${communityId}, that is not ${communities[i].id}`);
+	}
 	return false;
 }
 
-export async function checkIsUserAlreadyRegisteredInsideCommunity(communityName, userId) {
-	const communities = await getAllComunitiesFromUser(userId);
-	for (let i = 0; i < communities.length; i++) {
-		if (communities[i].name === communityName) {
-			return true;
-		}
-	}
-}
-
-export async function checkIfUserIsModerator(communityName, userId) {
-	const moderatorList = await getAllModeratorsFromCommunity(communityName);
+export async function checkIfUserIsModerator(communityId, userId) {
+	const moderatorList = await getAllModeratorsFromCommunity(communityId);
 	for (let i = 0; i < moderatorList.length; i++) {
 		if (moderatorList[i].usersId === userId) {
 			return true;

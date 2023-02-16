@@ -53,13 +53,27 @@ describe(
         it('POST/community/leave dummy2 should leave the community, expect status 200', async () => {
             const communityData = (await axios.get(`http://localhost:3003/api/community/me`,
                 { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } })).data;
-            const response = await axios.post(`http://localhost:3003/api/community/leave`,
-                { 'name': communityData[0].name },
+
+            const response = await axios.post(`http://localhost:3003/api/community/leave/${communityData[0].id}`,
+                {},
                 { headers: { 'Authorization': `Bearer ${DUMMY2_AUTH_TOKEN_DATA.token}` } });
 
             expect(response.status).to.equal(200);
         });
 
+        it('POST/community/leave dummy2 tried to leave a community it doesnt belong, expect status 404', async () => {
+            const communityData = (await axios.get(`http://localhost:3003/api/community/me`,
+                { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } })).data;
+            try {
+                const response = await axios.post(`http://localhost:3003/api/community/leave/${communityData[0].id}`,
+                    {},
+                    { headers: { 'Authorization': `Bearer ${DUMMY2_AUTH_TOKEN_DATA.token}` } });
+                expect(response.status).to.equal(404);
+            } catch (err) {
+                expect(err.response.status).to.equal(404);
+            }
+
+        });
 
         it('GET/community/me should list the first and only community with name "DummyCommunity0001" from dummy1', async () => {
             const response = await axios.get(`http://localhost:3003/api/community/me`,
@@ -68,16 +82,17 @@ describe(
         });
 
         it('DELETE/community/delete should delete the community and dummies from database, expect status 200', async () => {
+            const communityData = (await axios.get(`http://localhost:3003/api/community/me`,
+                { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } })).data;
             await axios.delete(`http://localhost:3001/api/users/me`,
                 { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } });
 
             await axios.delete(`http://localhost:3001/api/users/me`,
                 { headers: { 'Authorization': `Bearer ${DUMMY2_AUTH_TOKEN_DATA.token}` } });
 
-            const response = await axios.delete(`http://localhost:3003/api/community/delete`,
+            const response = await axios.delete(`http://localhost:3003/api/community/delete/${communityData[0].id}`,
                 {
-                    headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` },
-                    data: { 'name': 'DummyCommunity0001' }
+                    headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` }
                 }
             );
 
