@@ -1,65 +1,4 @@
-import axios from "axios"
-import { createCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, removeUserFromCommunity } from "./service.mjs";
-
-/**
- * @openapi
- * /user/list:
- *  get:
- *    summary: "List all user IDs that are inside of at least one community"
- *    
- *    tags:
- *       - "Users"
- * 
- *    operationId: listAllCommunityUsers
- *    x-eov-operation-handler: user/router
- * 
- *    responses:
- *      '200':
- *        description: "Got all users that are inside communities"
- *      '500':
- *        description: "Internal server error"
- * 
- *    security:
- *      - {}
- */
-export async function listAllCommunityUsers(req){
-  const headers = {
-    'Authorization': req.header('Authorization')
-  }
-  const axios = newAxios();
-  const response = await axios.get("http://localhost:3003/api/community/all", {headers});
-  return response.data;
-}
-
-
-/**
- * @openapi
- * /community/users/{id}:
- *  get:
- *    summary: "List all users from specified community"
- *    
- *    tags:
- *       - "Users"
- * 
- *    parameters:
- *      - $ref: "#/components/parameters/Id"  
- * 
- *    operationId: listAllComunityUsers
- *    x-eov-operation-handler: user/router
- 
- *    responses:
- *      '200':
- *        description: "Created a new community"
- *      '401':
- *        description: "Users without authentication cannot create or join communities"
- *  
- *    security:
- *      - {}
- */
-export async function listAllComunityUsers(req, res, _){
-    const users = await listEveryUserFromCommunity(req.params.id); 
-    return res.json(users);
-}
+import { createCommunity, deleteTheCommunity, listEveryComunity,listEveryComunityFromUser, enterCommunity } from "./service.mjs";
 
 /**
  * @openapi
@@ -98,17 +37,18 @@ export async function createNewCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/leave:
- *  post:
- *    summary: "Request to leave a community"
+ * /community/delete:
+ *  delete:
+ *    summary: "Request to delete a community"
+ *    
  *    tags:
  *       - "Community"
  * 
- *    operationId: leaveCommunity
- *    x-eov-operation-handler: user/router
+ *    operationId: deleteCommunity
+ *    x-eov-operation-handler: community/router
  * 
  *    requestBody:
- *      description: Login information
+ *      description: Community information
  *      required: true
  *      content:
  *        application/json:
@@ -117,53 +57,16 @@ export async function createNewCommunity(req, res, _) {
  *
  *    responses:
  *      '200':
- *        description: "Left the community"
- *      '403':
- *        description: "Not a moderator/not inside the commmunity"
- *      '404':
- *        description: "No community found available to leave"
+ *        description: "Deleted the community"
+ *      '401':
+ *        description: "User does not have moderator permission inside the community"
  * 
  *    security:
  *      - JWT: ['USER']
  */
-export async function leaveCommunity(req, res, _) {
-    const success = await removeUserFromCommunity(req.user.id, req.body.name);
-    console.log(success);
-    return success ? res.sendStatus(200) : res.sendStatus(404);
-}
-
-/**
- * @openapi
- * /community/join:
- *  post:
- *    summary: "Request to enter a community"
- *    
- *    tags:
- *       - "Community"
- * 
- *    operationId: enterOnCommunity
- *    x-eov-operation-handler: user/router
- * 
- *    requestBody:
- *      description: Community information
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/communityParams'
- *
- *    responses:
- *      '200':
- *        description: "Created a new community"
- *      '403':
- *        description: "Some error ocurred during the community creating"
- * 
- *    security:
- *      - JWT: ['USER']
- */
-export async function enterOnCommunity(req, res, _) {
-    const success = await enterCommunity(req.user.id, req.body);
-    return success ? res.sendStatus(200) : res.sendStatus(403);
+export async function deleteCommunity(req, res, _) {
+    const success = await deleteTheCommunity(req);
+    return success ? res.sendStatus(200) : res.sendStatus(401);
 }
 
 /**
@@ -176,7 +79,7 @@ export async function enterOnCommunity(req, res, _) {
  *       - "Community"
  * 
  *    operationId: listAllComunities
- *    x-eov-operation-handler: user/router
+ *    x-eov-operation-handler: community/router
  *
  *    responses:
  *      '200':
@@ -202,7 +105,7 @@ export async function listAllComunities(req, res, _){
  *       - "Community"
  * 
  *    operationId: listAllUserComunities
- *    x-eov-operation-handler: user/router
+ *    x-eov-operation-handler: community/router
  *
  *    responses:
  *      '200':
@@ -214,75 +117,40 @@ export async function listAllComunities(req, res, _){
  *      - JWT: ['USER']
  */
 export async function listAllUserComunities(req, res, _){
-    const communities = await listEveryComunityFromUser(req.user.id); 
+    const communities = await listEveryComunityFromUser(req); 
     return res.json(communities);
 }
 
 /**
  * @openapi
- * /test:
- *  get:
- *    summary: "test get request to another server"
- * 
- *    tags:
- *      - Testing
- *    
- *    operationId: testAxiosGet
- *    x-eov-operation-handler: user/router
- * 
- *    responses:
- *      '200':
- *        description: "New user registered successfully"
- *      '400':
- *        description: "Invalid data provided"
- *      '401':
- *        description: "Registration failed"
- * 
- *    security:
- *      - {}
- */
-export async function testAxionGet(req, res, _) {
-    const response = await axios.get(`http://localhost:3001/api/info`);
-    console.log(response.data);
-    return res.json(response.data);
-}
-
-/**
- * 
- * @openapi
- * /test:
+ * /community/join:
  *  post:
- *    summary: test axios post request
- * 
+ *    summary: "Request to enter a community"
+ *    
  *    tags:
- *      - Testing
+ *       - "Community"
  * 
- *    operationId: testAxiosPost
- *    x-eov-operation-handler: user/router
+ *    operationId: enterOnCommunity
+ *    x-eov-operation-handler: community/router
  * 
  *    requestBody:
- *      description: Test res body
+ *      description: Community information
  *      required: true
  *      content:
  *        application/json:
  *          schema:
- *            $ref: "#/components/schemas/testSchema"
- * 
+ *            $ref: '#/components/schemas/communityParams'
+ *
  *    responses:
  *      '200':
- *        description: "New user registered successfully"
- *      '400':
- *        description: "Invalid data provided"
- *      '401':
- *        description: "Registration failed"
+ *        description: "Created a new community"
+ *      '403':
+ *        description: "Some error ocurred during the community creating"
  * 
  *    security:
- *      - {}
+ *      - JWT: ['USER']
  */
-export async function testAxiosPost(req, res, _){
-    console.log(req.body);
-    if(req.body){
-        return res.sendStatus(200);
-    }
-    return res.sendStatus(401);
+export async function enterOnCommunity(req, res, _) {
+    const success = await enterCommunity(req);
+    return success ? res.sendStatus(200) : res.sendStatus(403);
 }

@@ -59,6 +59,7 @@ export async function get_user(req, res, _) {
   /*if(!req.user){
     return res.send("Guest user");
   }*/
+  //console.log(req.user);
   const user = await loadById(parseInt(req.params.id));
   return user ? res.json(user) : res.sendStatus(404);  
 }
@@ -88,6 +89,7 @@ export async function get_user(req, res, _) {
  *      - JWT: ['USER']
  */
 export async function get_current_user(req, res, _){
+
   if(!req.user){
     return res.send("Guest user");
   }
