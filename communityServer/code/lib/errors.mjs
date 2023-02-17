@@ -68,7 +68,6 @@ export function toJSON(err) {
 
 export function sendError(res, err) {
     const error = toJSON(err);
-    console.log('isProd()');
     console.log(error.stack);
     if (isProd()) {
         delete error.stack;

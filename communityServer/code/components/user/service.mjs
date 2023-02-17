@@ -1,5 +1,5 @@
 import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity, checkIfCommunityExists, updateCommunity } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity, checkIfCommunityExists, updateCommunity, checkIfPostExists, getPostById, updatePost } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -74,18 +74,25 @@ export async function getAllPostsFromAllUserCommunities(userId) {
 }
 
 export async function deletePost(userId, {communityId, postId}) {
-    ServerError.throwIf(!await checkIfCommunityExists(communityId, "Community not found!", notFound));
+    ServerError.throwIf(!await checkIfCommunityExists(communityId), "Community not found!", notFound);
     const post = await getPostFromCommunityById(communityId, postId);
+    ServerError.throwIf(!post, "No posts matching this id found inside this community", notFound);
     if(post.userId !== userId){
         ServerError.throwIfNot(await checkIfUserIsModerator(communityId, userId), "User does not have permission to delete this post", forbidden);
     }
-    return await deletePostFromCommunity(communityId, postId);
+    return await deletePostFromCommunity(postId);
 }
 
 export async function updateCommunityData(userId, communityData){
-    console.log("communityData");
-    console.log(communityData);
-    ServerError.throwIf(!await checkIfCommunityExists(communityData.id, "Community not found!", notFound));
+    ServerError.throwIf(!await checkIfCommunityExists(communityData.id), "Community not found!", notFound);
     ServerError.throwIf(!await checkIfUserIsModerator(communityData.id, userId), "User does not have moderator role inside community", forbidden);
     return await updateCommunity(communityData);
+}
+
+export async function updatePostData(userId, postData){
+    ServerError.throwIf(!await checkIfCommunityExists(postData.communityId), "Community not found!", notFound);
+    ServerError.throwIf(!await checkIfPostExists(postData.postId), "Post not found!", notFound);
+    const post = await getPostById(postData.communityId, postData.postId);
+    ServerError.throwIf(post.userId !== userId && !await checkIfUserIsModerator(postData.communityId, userId), "User does not have permission to update post", forbidden);
+    return await updatePost(postData);
 }

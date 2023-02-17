@@ -1,4 +1,4 @@
-import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost, updateCommunityData } from "./service.mjs";
+import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost, updateCommunityData, updatePostData } from "./service.mjs";
 
 /**
  * @openapi
@@ -150,7 +150,6 @@ export async function updateCommunity(req, res, _) {
  */
 export async function leaveCommunity(req, res, _) {
     const success = await leaveFromCommunity(req.user.id, req.params.id);
-    console.log(success);
     return success ? res.sendStatus(200) : res.sendStatus(404);
 }
 
@@ -275,7 +274,7 @@ export async function listAllUserComunities(req, res, _) {
 
 /**
  * @openapi
- * /post/create:
+ * /post:
  *  post:
  *    summary: "Create a new post inside community"
  *    
@@ -337,7 +336,7 @@ export async function getAllPosts(req, res, _) {
  * @openapi
  * /post:
  *  delete:
- *    summary: "Get all posts from all communities that user is in"
+ *    summary: "Deletes a specified post from a specified community"
  *    
  *    tags:
  *       - "Posts"
@@ -365,4 +364,38 @@ export async function getAllPosts(req, res, _) {
 export async function deletePostFromCommunity(req, res, _) {
     const success = await deletePost(req.user.id, req.body);
     return success ? res.json(success) : res.sendStatus(403);
+}
+
+/**
+ * @openapi
+ * /post:
+ *  put:
+ *    summary: "Edits post information"
+ *    
+ *    tags:
+ *       - "Posts"
+ * 
+ *    operationId: updatePost
+ *    x-eov-operation-handler: user/router
+ * 
+ *    requestBody:
+ *      description: Login information
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/updatePostData'
+ *
+ *    responses:
+ *      '200':
+ *        description: "Updated the post"
+ *      '403':
+ *        description: "Some error ocurred during the operation"
+ * 
+ *    security:
+ *      - JWT: ['USER']
+ */
+export async function updatePost(req, res, _) {
+    const success = await updatePostData(req.user.id, req.body);
+    return success ? res.sendStatus(200) : res.sendStatus(403);
 }

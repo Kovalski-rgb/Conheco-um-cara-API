@@ -86,9 +86,20 @@ export async function getPostFromCommunityById(communityId, postId) {
 	return null;
 }
 
-export async function deletePostFromCommunity(communityId, postId) {
-	return prisma.posts.delete({
-		where: { id: postId }
+export async function deletePostFromCommunity(postId) {
+	return await prisma.posts.delete({
+		where: {
+			id: postId
+		}
+	});
+}
+
+export async function getPostById(communityId, postId) {
+	return await prisma.posts.findFirst({
+		where: {
+			id: postId,
+			community: { id: communityId }
+		}
 	});
 }
 
@@ -197,7 +208,6 @@ export async function createNewPost(userId, { communityId, title, description, i
 	}
 	if (productsId) {
 		const product = await checkIfProductExists(productsId);
-		console.log(product);
 		if (!product) {
 			await registerNewProduct(productsId, userId);
 		}
@@ -246,6 +256,18 @@ export async function updateCommunity(communityData) {
 	});
 }
 
+export async function updatePost(postData) {
+	const id = postData.postId;
+	delete postData.postId;
+	delete postData.communityId;
+	return await prisma.posts.update({
+		where: { id: id },
+		data: {
+			...postData
+		}
+	});
+}
+
 // ------------------------- check functions
 
 
@@ -265,6 +287,12 @@ export async function checkIfProductExists(productId) {
 
 export async function checkIfUserExists(id) {
 	return await prisma.users.findFirst({
+		where: { id }
+	}) ? true : false;
+}
+
+export async function checkIfPostExists(id) {
+	return await prisma.posts.findFirst({
 		where: { id }
 	}) ? true : false;
 }
@@ -294,7 +322,6 @@ export async function checkIsUserAlreadyRegisteredInsideCommunity(communityId, u
 		if (communities[i].id == communityId) {
 			return true;
 		}
-		console.log(`${userId} have ${communityId}, that is not ${communities[i].id}`);
 	}
 	return false;
 }

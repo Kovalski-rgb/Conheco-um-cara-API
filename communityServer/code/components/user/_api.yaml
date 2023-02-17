@@ -129,6 +129,44 @@ components:
         - title
         - description
 
+    updatePostData:
+      type: object
+      properties:
+        communityId:
+          type: integer 
+          format: int32
+          minimum: 1
+          example: 1
+        postId:
+          type: integer 
+          format: int32
+          minimum: 1
+          example: 1
+        title:
+          type: string
+          minLength: 3
+          maxLength: 20
+          example: "Post title"
+        description:
+          type: string
+          maxLength: 8000
+          example: "Post description"
+        image:
+          type: string
+        productsId:
+          type: integer 
+          format: int32
+          minimum: 1
+          example: 1
+        servicesId:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 1
+      required:
+        - communityId
+        - postId
+
 
   parameters:
     Id:
