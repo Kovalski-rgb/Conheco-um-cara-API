@@ -10,7 +10,7 @@ describe(
         let DUMMY1_AUTH_TOKEN_DATA;
         let DUMMY2_AUTH_TOKEN_DATA;
 
-        it('POST/community/create should create a new community under the name "DummyCommunity0001", expect status 200', async () => {
+        it('POST/community should create a new community under the name "DummyCommunity0001", expect status 200', async () => {
             (await axios.post(`http://localhost:3001/api/users`, getDummy1Data()));
             (await axios.post(`http://localhost:3001/api/users`, getDummy2Data()));
 
@@ -18,7 +18,7 @@ describe(
             DUMMY1_AUTH_TOKEN_DATA = (await axios.post(`http://localhost:3001/api/users/login`, getDummy1Data())).data;
             DUMMY2_AUTH_TOKEN_DATA = (await axios.post(`http://localhost:3001/api/users/login`, getDummy2Data())).data;
 
-            const response = await axios.post(`http://localhost:3003/api/community/create`,
+            const response = await axios.post(`http://localhost:3003/api/community`,
                 { 'name': 'DummyCommunity0001' },
                 { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } });
 
@@ -81,6 +81,15 @@ describe(
             expect(response.data[0].name).to.equal("DummyCommunity0001");
         });
 
+        it('PUT/community should update the community name, expect status 200', async () => {
+            const community = await axios.get(`http://localhost:3003/api/community/me`,
+                { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } });
+            const response = await axios.put(`http://localhost:3003/api/community`,
+            { 'id':community.data[0].id, 'name': 'DummyCommunity0002' },
+            { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } });
+            expect(response.status).to.equal(200);
+        });
+
         it('DELETE/community/delete should delete the community and dummies from database, expect status 200', async () => {
             const communityData = (await axios.get(`http://localhost:3003/api/community/me`,
                 { headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` } })).data;
@@ -90,7 +99,7 @@ describe(
             await axios.delete(`http://localhost:3001/api/users/me`,
                 { headers: { 'Authorization': `Bearer ${DUMMY2_AUTH_TOKEN_DATA.token}` } });
 
-            const response = await axios.delete(`http://localhost:3003/api/community/delete/${communityData[0].id}`,
+            const response = await axios.delete(`http://localhost:3003/api/community/${communityData[0].id}`,
                 {
                     headers: { 'Authorization': `Bearer ${DUMMY1_AUTH_TOKEN_DATA.token}` }
                 }

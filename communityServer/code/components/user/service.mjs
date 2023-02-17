@@ -1,5 +1,5 @@
 import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity, checkIfCommunityExists, updateCommunity } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -60,8 +60,7 @@ export async function deleteTheCommunity(userId, communityId) {
 }
 
 export async function createNewCommunityPost(userId, { communityId, title, description, image, productsId, servicesId }) {
-    if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId))
-        ServerError.throwIf(true, "Community not found!", notFound);
+    ServerError.throwIf(!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId), "Community not found!", notFound);
     return await createNewPost(userId, { communityId, title, description, image, productsId, servicesId });
 }
 
@@ -75,9 +74,18 @@ export async function getAllPostsFromAllUserCommunities(userId) {
 }
 
 export async function deletePost(userId, {communityId, postId}) {
+    ServerError.throwIf(!await checkIfCommunityExists(communityId, "Community not found!", notFound));
     const post = await getPostFromCommunityById(communityId, postId);
     if(post.userId !== userId){
         ServerError.throwIfNot(await checkIfUserIsModerator(communityId, userId), "User does not have permission to delete this post", forbidden);
     }
     return await deletePostFromCommunity(communityId, postId);
+}
+
+export async function updateCommunityData(userId, communityData){
+    console.log("communityData");
+    console.log(communityData);
+    ServerError.throwIf(!await checkIfCommunityExists(communityData.id, "Community not found!", notFound));
+    ServerError.throwIf(!await checkIfUserIsModerator(communityData.id, userId), "User does not have moderator role inside community", forbidden);
+    return await updateCommunity(communityData);
 }

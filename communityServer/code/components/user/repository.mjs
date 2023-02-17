@@ -64,7 +64,7 @@ export async function getAllPostsFromCommunity(communityId) {
 		}
 	});
 	let posts = [];
-	for(let i = 0; i < allPosts.posts.length; i++){
+	for (let i = 0; i < allPosts.posts.length; i++) {
 		posts.push(allPosts.posts[i]);
 	}
 	return posts;
@@ -79,14 +79,14 @@ export async function getPostFromCommunityById(communityId, postId) {
 			posts: true
 		}
 	});
-	for(let i = 0; i < allPosts.posts.length; i++){
-		if(allPosts.posts[i].id === postId)
-		return allPosts.posts[i];
+	for (let i = 0; i < allPosts.posts.length; i++) {
+		if (allPosts.posts[i].id === postId)
+			return allPosts.posts[i];
 	}
 	return null;
 }
 
-export async function deletePostFromCommunity(communityId, postId){
+export async function deletePostFromCommunity(communityId, postId) {
 	return prisma.posts.delete({
 		where: { id: postId }
 	});
@@ -231,6 +231,17 @@ export async function registerNewService(id, userId) {
 		data: {
 			id: id,
 			user: { connect: { id: userId } }
+		}
+	});
+}
+
+export async function updateCommunity(communityData) {
+	const id = communityData.id;
+	delete communityData.id;
+	return await prisma.communities.update({
+		where: { id: id },
+		data: {
+			...communityData
 		}
 	});
 }

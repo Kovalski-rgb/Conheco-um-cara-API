@@ -1,4 +1,4 @@
-import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost } from "./service.mjs";
+import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost, updateCommunityData } from "./service.mjs";
 
 /**
  * @openapi
@@ -57,7 +57,7 @@ export async function listAllComunityUsers(req, res, _) {
 
 /**
  * @openapi
- * /community/create:
+ * /community:
  *  post:
  *    summary: "Creates a new Community"
  *    
@@ -91,7 +91,41 @@ export async function createNewCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/leave/{id}:
+ * /community:
+ *  put:
+ *    summary: "Edits community information"
+ *    
+ *    tags:
+ *       - "Community"
+ * 
+ *    operationId: updateCommunity
+ *    x-eov-operation-handler: user/router
+ * 
+ *    requestBody:
+ *      description: Login information
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/communityData'
+ *
+ *    responses:
+ *      '200':
+ *        description: "Updated the community"
+ *      '403':
+ *        description: "Some error ocurred during the operation"
+ * 
+ *    security:
+ *      - JWT: ['USER']
+ */
+export async function updateCommunity(req, res, _) {
+    const success = await updateCommunityData(req.user.id, req.body);
+    return success ? res.sendStatus(200) : res.sendStatus(403);
+}
+
+/**
+ * @openapi
+ * /community/leave/{id}: 
  *  post:
  *    summary: "Request to leave a community"
  *    tags:
@@ -122,7 +156,7 @@ export async function leaveCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/join:
+ * /community/join: 
  *  post:
  *    summary: "Request to enter a community"
  *    
@@ -158,7 +192,7 @@ export async function enterOnCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/delete/{id}:
+ * /community/{id}:
  *  delete:
  *    summary: "Request to delete a community"
  *    
@@ -189,7 +223,7 @@ export async function deleteCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/all:
+ * /community:
  *  get:
  *    summary: "List all communities"
  *    
