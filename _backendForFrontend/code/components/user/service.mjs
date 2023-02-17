@@ -12,8 +12,10 @@ export async function login({ email, password }) {
   return response.data;
 }
 
-export async function loadById(id) {
-  const response = await axios.get(`http://localhost:3001/api/users/${id}`);
+export async function loadById(req) {
+  const response = await axios.get(`http://localhost:3001/api/users/${parseInt(req.params.id)}`,{
+    headers: { Authorization: req.header("Authorization") }
+  });
   return response.data;
 }
 

@@ -11,7 +11,7 @@ export async function login({email, password}) {
 }
 
 export async function getUser(id) {
-    return loadById(id);
+    return await loadById(id);
 }
 
 export async function registerUser({name, email, password}){
