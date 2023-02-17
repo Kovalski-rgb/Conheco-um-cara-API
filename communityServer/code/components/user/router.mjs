@@ -1,4 +1,4 @@
-import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities } from "./service.mjs";
+import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost } from "./service.mjs";
 
 /**
  * @openapi
@@ -296,5 +296,39 @@ export async function createNewPost(req, res, _) {
  */
 export async function getAllPosts(req, res, _) {
     const success = await getAllPostsFromAllUserCommunities(req.user.id);
+    return success ? res.json(success) : res.sendStatus(403);
+}
+
+/**
+ * @openapi
+ * /post:
+ *  delete:
+ *    summary: "Get all posts from all communities that user is in"
+ *    
+ *    tags:
+ *       - "Posts"
+ * 
+ *    operationId: deletePostFromCommunity
+ *    x-eov-operation-handler: user/router
+ * 
+ *    requestBody:
+ *      description: Post and community Id
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/postIdData'
+ *
+ *    responses:
+ *      '200':
+ *        description: "Deleted post succesfully"
+ *      '403':
+ *        description: "Refused if user does not have proper permission (is not creator, or not a community moderator)"
+ * 
+ *    security:
+ *      - JWT: ['USER']
+ */
+export async function deletePostFromCommunity(req, res, _) {
+    const success = await deletePost(req.user.id, req.body);
     return success ? res.json(success) : res.sendStatus(403);
 }

@@ -1,5 +1,5 @@
 import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -72,4 +72,12 @@ export async function getAllPostsFromAllUserCommunities(userId) {
         posts.push(await getAllPostsFromCommunity(communities[i].id));
     }
     return posts;
+}
+
+export async function deletePost(userId, {communityId, postId}) {
+    const post = await getPostFromCommunityById(communityId, postId);
+    if(post.userId !== userId){
+        ServerError.throwIfNot(await checkIfUserIsModerator(communityId, userId), "User does not have permission to delete this post", forbidden);
+    }
+    return await deletePostFromCommunity(communityId, postId);
 }

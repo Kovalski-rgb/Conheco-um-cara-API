@@ -63,6 +63,20 @@ components:
           maxLength: 6
           example: "a1b2c3"
     
+    postIdData:
+      type: object
+      properties:
+        communityId:
+          type: integer 
+          format: int32
+          minimum: 1
+          example: 1
+        postId:
+          type: integer 
+          format: int32
+          minimum: 1
+          example: 1
+
     postData:
       type: object
       properties:

@@ -70,6 +70,28 @@ export async function getAllPostsFromCommunity(communityId) {
 	return posts;
 }
 
+export async function getPostFromCommunityById(communityId, postId) {
+	const allPosts = await prisma.communities.findFirst({
+		where: {
+			id: communityId,
+		},
+		select: {
+			posts: true
+		}
+	});
+	for(let i = 0; i < allPosts.posts.length; i++){
+		if(allPosts.posts[i].id === postId)
+		return allPosts.posts[i];
+	}
+	return null;
+}
+
+export async function deletePostFromCommunity(communityId, postId){
+	return prisma.posts.delete({
+		where: { id: postId }
+	});
+}
+
 // ------------------------- register functions
 export async function registerCommunity({ name, description }) {
 	let code = randomCodeGenerator(6);
