@@ -38,29 +38,27 @@ export async function user_login(req, res, _) {
  * /users/{id}:
  *   get:
  *     summary: "Retrieves user information"
- * 
+ *
  *     tags:
  *       - "Profile"
- * 
+ *
  *     parameters:
  *       - $ref: "#/components/parameters/Id"
- * 
+ *
  *     operationId: get_user
  *     x-eov-operation-handler: user/router
- * 
+ *
  *     responses:
  *       '200':
  *         description: "Returns the user"
  *       '404':
  *         description: "User not found"
+ *     security:
+ *       - {}
+ *       - JWT: ['USER']
  */
-//todo: Return conditional validator
 export async function get_user(req, res, _) {  
-  /*if(!req.user){
-    return res.send("Guest user");
-  }*/
-  //console.log(req.user);
-  const user = await loadById(parseInt(req.params.id));
+  const user = await loadById(req);
   return user ? res.json(user) : res.sendStatus(404);  
 }
 

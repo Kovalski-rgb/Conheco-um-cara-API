@@ -1,0 +1,34 @@
+{
+  "name": "communityserver",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "nodemon code/_bin/www.mjs",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.10.0",
+    "axios": "^1.2.5",
+    "bcrypt": "^5.1.0",
+    "chai": "^4.3.7",
+    "chalk": "^5.2.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "dotenv-expand": "^10.0.0",
+    "express": "~4.16.1",
+    "express-openapi-validator": "^5.0.1",
+    "http-errors": "~1.6.3",
+    "jwt-simple": "^0.5.6",
+    "mocha": "^10.2.0",
+    "morgan": "~1.9.1",
+    "mysql2": "^3.1.2",
+    "pjson": "^1.0.9",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20",
+    "prisma": "^4.10.1"
+  }
+}

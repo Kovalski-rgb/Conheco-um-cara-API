@@ -37,7 +37,7 @@ export async function createNewCommunity(req, res, _) {
 
 /**
  * @openapi
- * /community/delete:
+ * /community/delete/{id}:
  *  delete:
  *    summary: "Request to delete a community"
  *    
@@ -47,19 +47,16 @@ export async function createNewCommunity(req, res, _) {
  *    operationId: deleteCommunity
  *    x-eov-operation-handler: community/router
  * 
- *    requestBody:
- *      description: Community information
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            $ref: '#/components/schemas/communityName'
+ *    parameters:
+ *       - $ref: "#/components/parameters/Id"
  *
  *    responses:
  *      '200':
  *        description: "Deleted the community"
- *      '401':
+ *      '403':
  *        description: "User does not have moderator permission inside the community"
+ *      '404':
+ *        description: "Community not found"
  * 
  *    security:
  *      - JWT: ['USER']

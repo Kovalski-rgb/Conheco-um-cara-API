@@ -1,26 +1,32 @@
-import { getUser, login, registerUser, updateUser, deleteUser } from "./service.mjs";
-import axios from "axios"
+import {
+  getUser,
+  login,
+  registerUser,
+  updateUser,
+  deleteUser,
+} from "./service.mjs";
+import axios from "axios";
 
 /**
  * @openapi
  * /users/login:
  *   post:
  *     summary: "Logs in the user"
- * 
+ *
  *     tags:
  *       - "Authentication"
- *     
+ *
  *     operationId: user_login
  *     x-eov-operation-handler: user/router
- * 
+ *
  *     requestBody:
  *       description: Login information
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/UsernamePassword" 
- * 
+ *             $ref: "#/components/schemas/UsernamePassword"
+ *
  *     responses:
  *       '200':
  *         description: "User logged in"
@@ -39,25 +45,31 @@ export async function user_login(req, res, _) {
  * /users/{id}:
  *   get:
  *     summary: "Retrieves user information"
- * 
+ *
  *     tags:
  *       - "Profile"
- * 
+ *
  *     parameters:
  *       - $ref: "#/components/parameters/Id"
- * 
+ *
  *     operationId: get_user
  *     x-eov-operation-handler: user/router
- * 
+ *
  *     responses:
  *       '200':
  *         description: "Returns the user"
  *       '404':
  *         description: "User not found"
+ *     security:
+ *       - {}
+ *       - JWT: ['USER']
  */
-export async function get_user(req, res, _) {  
+export async function get_user(req, res, _) {
+  if(!req.user){
+    return res.send("Guest user");
+  }
   const user = await getUser(parseInt(req.params.id));
-  return user ? res.json(user) : res.sendStatus(404);  
+  return user ? res.json(user) : res.sendStatus(404);
 }
 
 /**
@@ -65,13 +77,13 @@ export async function get_user(req, res, _) {
  * /users/me:
  *  get:
  *    summary: "Gets currently logged user, user need to be logged in"
- *  
+ *
  *    tags:
  *      - "Profile"
- *  
+ *
  *    operationId: get_current_user
  *    x-eov-operation-handler: user/router
- *  
+ *
  *    responses:
  *      '200':
  *        description: "New user registered successfully"
@@ -79,17 +91,17 @@ export async function get_user(req, res, _) {
  *        description: "Invalid data provided"
  *      '401':
  *        description: "Registration failed"
- * 
+ *
  *    security:
  *      - {}
  *      - JWT: ['USER']
  */
-export async function get_current_user(req, res, _){
-  if(!req.user){
+export async function get_current_user(req, res, _) {
+  if (!req.user) {
     return res.send("Guest user");
   }
   const user = await getUser(parseInt(req.user.id));
-  return user ? res.json(user) : res.sendStatus(404); 
+  return user ? res.json(user) : res.sendStatus(404);
 }
 
 /**
@@ -97,21 +109,21 @@ export async function get_current_user(req, res, _){
  * /users:
  *   post:
  *     summary: "Creates a new user"
- * 
+ *
  *     tags:
  *       - "Profile"
- *     
+ *
  *     operationId: user_register
  *     x-eov-operation-handler: user/router
- * 
+ *
  *     requestBody:
  *       description: New user information
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: "#/components/schemas/NewUserInfo" 
- * 
+ *             $ref: "#/components/schemas/NewUserInfo"
+ *
  *     responses:
  *       '200':
  *         description: "New user registered successfully"
@@ -125,8 +137,11 @@ export async function user_register(req, res, _) {
   return user ? res.sendStatus(200) : res.sendStatus(401);
 }
 
-async function echoNewUser(createdUser){
-  const response = await axios.post('http://localhost:3003/api/test', createdUser);
+async function echoNewUser(createdUser) {
+  const response = await axios.post(
+    "http://localhost:3003/api/test",
+    createdUser
+  );
   console.log(response);
   return response;
 }
@@ -134,34 +149,34 @@ async function echoNewUser(createdUser){
 /**
  * @openapi
  * /info:
- * 
+ *
  *  get:
  *    summary: Retrieves Developer Information
- * 
+ *
  *    tags:
  *      - "Misc"
- * 
+ *
  *    operationId: dev_info
  *    x-eov-operation-handler: user/router
- * 
+ *
  *    responses:
  *      '200':
  *        description: "Developer info retrieved successfully"
  */
-export async function dev_info(req, res, _){
+export async function dev_info(req, res, _) {
   return res.json([
     {
-      "name": "André Luiz Kovalski",
-      "github": "https://github.com/Kovalski-rgb"
+      name: "André Luiz Kovalski",
+      github: "https://github.com/Kovalski-rgb",
     },
     {
-      "name": "Carlos Mareo Suzuki",
-      "github": "https://github.com/carlosuzuki"
+      name: "Carlos Mareo Suzuki",
+      github: "https://github.com/carlosuzuki",
     },
     {
-      "name": "Fernando Andrey Borman",
-      "github": "https://github.com/fborman"
-    }
+      name: "Fernando Andrey Borman",
+      github: "https://github.com/fborman",
+    },
   ]);
 }
 
@@ -182,7 +197,7 @@ export async function dev_info(req, res, _){
  *      content:
  *        application/json:
  *          schema:
- *            $ref: "#/components/schemas/UserInfo" 
+ *            $ref: "#/components/schemas/UserInfo"
  *
  *    responses:
  *      200:
@@ -196,7 +211,9 @@ export async function dev_info(req, res, _){
  *      - JWT: ['USER']
  */
 export async function user_update(req, res, _) {
-  if(!req.user){ res.sendStatus(401); }
+  if (!req.user) {
+    res.sendStatus(401);
+  }
   req.body.id = req.user.id;
   const userData = await updateUser(req.body);
   return userData ? res.sendStatus(200) : res.sendStatus(500);
@@ -210,7 +227,7 @@ export async function user_update(req, res, _) {
  *
  *    tags:
  *      - "Profile"
- * 
+ *
  *    operationId: delete_current_user
  *    x-eov-operation-handler: user/router
  *
@@ -226,7 +243,9 @@ export async function user_update(req, res, _) {
  *      - JWT: ['USER']
  */
 export async function delete_current_user(req, res, _) {
-  if(!req.user){ res.sendStatus(401); }
+  if (!req.user) {
+    res.sendStatus(401);
+  }
   const userDataDelete = await deleteUser(parseInt(req.user.id));
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
 }
@@ -239,10 +258,10 @@ export async function delete_current_user(req, res, _) {
  *
  *    tags:
  *      - "Profile"
- * 
+ *
  *    parameters:
  *      - $ref: "#/components/parameters/Id"
- * 
+ *
  *    operationId: delete_user
  *    x-eov-operation-handler: user/router
  *
@@ -257,8 +276,10 @@ export async function delete_current_user(req, res, _) {
  *    security:
  *      - JWT: ['ADMIN']
  */
-export async function delete_user(req, res, _){
-  if(!req.user){ res.sendStatus(401); }
+export async function delete_user(req, res, _) {
+  if (!req.user) {
+    res.sendStatus(401);
+  }
   const userDataDelete = await deleteUser(parseInt(req.params.id));
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
 }

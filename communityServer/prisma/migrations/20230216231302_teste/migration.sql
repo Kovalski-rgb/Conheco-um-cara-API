@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE `Products` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL,
     `usersId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -8,7 +8,7 @@ CREATE TABLE `Products` (
 
 -- CreateTable
 CREATE TABLE `Services` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `id` INTEGER NOT NULL,
     `usersId` INTEGER NOT NULL,
 
     PRIMARY KEY (`id`)
