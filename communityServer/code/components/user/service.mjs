@@ -43,7 +43,12 @@ export async function enterCommunity(userId, { name, code }) {
 
 export async function leaveFromCommunity(userId, communityId) {
     if (await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId)) {
-        return await deleteUserInsideCommunity(communityId, userId);
+        const result = await deleteUserInsideCommunity(communityId, userId);
+        const userList = await getAllUsersFromCommunity(communityId);
+        if(userList[0].users.length === 0){
+            await deleteCommunity(communityId);
+        }
+        return result;
     }
     ServerError.throwIf(true, 'No communities found for that user', notFound);
 }
