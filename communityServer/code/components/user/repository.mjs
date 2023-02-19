@@ -149,6 +149,24 @@ export async function registerNewModerator(communityId, userId) {
 	return true;
 }
 
+export async function removeModerator(communityId, userId) {
+	const exists = checkIfCommunityExists(communityId);
+	if (!exists) return false;
+
+	const moderators = await prisma.moderators.findMany();
+	let id;
+
+	for (let i = 0; i < moderators.length; i++) {
+		if (moderators[i].communitiesId == communityId && moderators[i].usersId == userId) {
+			id = moderators[i].id;
+		}
+	}
+
+	return await prisma.moderators.delete({
+		where: { id: id }
+	});
+}
+
 export async function registerUserId(id) {
 	const exists = await prisma.users.findFirst({
 		where: {
@@ -266,6 +284,17 @@ export async function updatePost(postData) {
 			...postData
 		}
 	});
+}
+
+export async function toggleModerator(communityId, targetId) {
+	const moderators = await getAllModeratorsFromCommunity(communityId);
+	console.log(JSON.stringify(moderators));
+	for (let i = 0; i < moderators.length; i++) {
+		if (targetId === moderators[i].usersId) {
+			return await removeModerator(communityId, targetId);
+		}
+	}
+	return await registerNewModerator(communityId, targetId);
 }
 
 // ------------------------- check functions

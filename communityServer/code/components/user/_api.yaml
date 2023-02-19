@@ -25,6 +25,20 @@ components:
         test:
           type: string
 
+    moderatorToggleTarget:
+      type: object
+      properties:
+        communityId:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 150
+        targetId:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 150
+
     community:
       type: object
       properties:

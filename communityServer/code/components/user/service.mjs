@@ -1,5 +1,5 @@
 import { forbidden, notFound, ServerError } from "../../lib/errors.mjs";
-import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity, checkIfCommunityExists, updateCommunity, checkIfPostExists, getPostById, updatePost } from "./repository.mjs";
+import { checkIsUserAlreadyRegisteredInsideCommunity, checkCommunityCode, getAllCommunities, getAllComunitiesFromUser, getAllIdsFromUsers, getAllUsersFromCommunity, registerCommunity, registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity, checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, createNewPost, getAllPostsFromCommunity, getPostFromCommunityById, deletePostFromCommunity, checkIfCommunityExists, updateCommunity, checkIfPostExists, getPostById, updatePost, getAllModeratorsFromCommunity, toggleModerator } from "./repository.mjs";
 
 export async function getAllUserIds() {
     return await getAllIdsFromUsers();
@@ -95,4 +95,14 @@ export async function updatePostData(userId, postData){
     const post = await getPostById(postData.communityId, postData.postId);
     ServerError.throwIf(post.userId !== userId && !await checkIfUserIsModerator(postData.communityId, userId), "User does not have permission to update post", forbidden);
     return await updatePost(postData);
+}
+
+export async function toggleModeratorPermission(userId, {communityId, targetId}){
+    ServerError.throwIf(!await checkIfCommunityExists(communityId), "Community not found!", notFound);
+    ServerError.throwIf(!await checkIfUserIsModerator(communityId, userId), "User does not have moderator role inside community", forbidden);
+    ServerError.throwIf(!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, targetId), "Target user not found!", notFound);
+    const moderatorList = await getAllModeratorsFromCommunity(communityId);
+    ServerError.throwIf((userId === targetId && moderatorList.length===1),"A community cannot have no moderators", forbidden); 
+    console.log("YESYESYES");
+    return await toggleModerator(communityId, targetId);
 }
