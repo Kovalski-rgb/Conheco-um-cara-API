@@ -198,11 +198,14 @@ export async function deleteUserInsideCommunity(communityId, userId) {
 	return false
 }
 
-export async function deleteCommunity(communityId) {
+export async function deleteCommunity(communityId) { 
 	await prisma.moderators.deleteMany({
 		where: { communitiesId: parseInt(communityId) }
 	});
-	const succeded = await prisma.communities.delete({
+	await prisma.posts.deleteMany({
+		where: { communitiesId: parseInt(communityId) }
+	});
+	const succeded = await prisma.communities.delete({ // TODO Foreign key constraint failed on the field: `communitiesId` (??????????????)
 		where: { id: parseInt(communityId) }
 	});
 	return succeded;
