@@ -26,7 +26,7 @@ components:
           description: Must at least be of length 8, 2 UpperCase letters, and one special symbol
           pattern: ^(?=(.*[a-z]){1,})(?=(.*[A-Z]){1,})(?=(.*[0-9]){1,})(?=(.*[!@#$%^&*()\-__+.]){1,}).{8,}$
           example: 00-ADmin
-          
+
     NewUserInfo:
       type: object
       required:
@@ -69,17 +69,23 @@ components:
         name:
           type: string
           minLength: 2
-          example: newGuest     
+          example: newGuest
         telephone:
           type: string
           minLength: 8
-          example: (41) 99900-9900 
+          example: (41) 99900-9900
 
     Id:
       type: integer
       format: int32
       minimum: 1
       example: 150
+    
+    token:
+      type: string
+      minLength: 6
+      maxLength: 400
+
 
   parameters:
     Id:
@@ -88,10 +94,11 @@ components:
       description: Unique id
       required: true
       schema:
-        $ref: '#/components/schemas/Id'
+        $ref: "#/components/schemas/Id"
 
   securitySchemes:
     JWT:
       type: http
       scheme: bearer
       bearerFormat: JWT
+

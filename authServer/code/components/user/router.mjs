@@ -6,6 +6,7 @@ import {
   deleteUser,
 } from "./service.mjs";
 import axios from "axios";
+import jwt from "jsonwebtoken";
 
 /**
  * @openapi
@@ -65,7 +66,7 @@ export async function user_login(req, res, _) {
  *       - JWT: ['USER']
  */
 export async function get_user(req, res, _) {
-  if(!req.user){
+  if (!req.user) {
     return res.send("Guest user");
   }
   const user = await getUser(parseInt(req.params.id));
@@ -282,4 +283,48 @@ export async function delete_user(req, res, _) {
   }
   const userDataDelete = await deleteUser(parseInt(req.params.id));
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
+}
+
+
+
+
+
+/**
+ * @openapi
+ * /checkToken:
+ *   get:
+ *     summary: "Logs in the user"
+ *
+ *     tags:
+ *       - "Authentication"
+ *
+ *     operationId: tokenLogin
+ *     x-eov-operation-handler: user/router
+ *
+ *
+ *     responses:
+ *       '200':
+ *         description: "User logged in"
+ *       '400':
+ *         description: "Invalid data provided"
+ *       '401':
+ *         description: "Login failed"
+ */
+export async function tokenLogin() {
+  // Token JWT a ser verificado
+  const token =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJFdSBjb25oZWNvIHVtIGNhcmEiLCJpYXQiOjE2NzY3NTE0NjYsImV4cCI6MTY3NzYxNTQ2Niwic3ViIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiQURNSU4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInJvbGVzIjpbIkFETUlOIiwiVVNFUiJdfX0.P23C61i-RjmCNXC-u9UZp73t29mypP_5qJdUAR6x_7U";
+
+  // Chave secreta usada para assinar o token
+  const secretKey = "dev-env";
+
+  // Verificar o token JWT
+  jwt.verify(token, secretKey, (error, decodedToken) => {
+    if (error) {
+      console.error("Erro ao verificar token JWT:", error.message);
+      return;
+    }
+    console.log("Token JWT verificado com sucesso!");
+    console.log("Dados do token decodificados:", decodedToken);
+  });
 }

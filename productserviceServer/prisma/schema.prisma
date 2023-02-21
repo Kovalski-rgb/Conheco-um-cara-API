@@ -11,22 +11,28 @@ datasource db {
 }
 
 model Products {
-  id            Int         @id @default(autoincrement())
-  name          String
-  usersId       Int
-  description   String
-  price         Float
-  productType   ProductType @relation(fields: [productTypeId], references: [id])
-  productTypeId Int         @unique
-  updatedAt     DateTime?
-  createdAt     DateTime    @default(now())
-  deletedAt     DateTime?
-  active        Boolean     @default(true)
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String
+  users       Users        @relation(fields: [userId], references: [id])
+  userId      Int
+  price       Float
+  productType ProductType? @relation(fields: [productTypeId], references: [id])
+  productTypeId Int?
+  updatedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  deletedAt   DateTime?
+  active      Boolean      @default(true)
+}
+
+model Users {
+  id       Int        @id
+  Products Products[]
 }
 
 model ProductType {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   description String
-  product     Products?
+  product     Products[] 
 }

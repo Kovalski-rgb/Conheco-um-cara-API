@@ -13,7 +13,7 @@ export async function login({ email, password }) {
 }
 
 export async function loadById(req) {
-  const response = await axios.get(`http://localhost:3001/api/users/${parseInt(req.params.id)}`,{
+  const response = await axios.get(`http://localhost:3001/api/users/${parseInt(req.user.id)}`,{
     headers: { Authorization: req.header("Authorization") }
   });
   return response.data;

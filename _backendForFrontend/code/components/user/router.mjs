@@ -91,7 +91,7 @@ export async function get_current_user(req, res, _){
   if(!req.user){
     return res.send("Guest user");
   }
-  const user = await loadById(parseInt(req.user.id));
+  const user = await loadById(req);
   return user ? res.json(user) : res.sendStatus(404); 
 }
 
