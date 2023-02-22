@@ -285,10 +285,6 @@ export async function delete_user(req, res, _) {
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
 }
 
-
-
-
-
 /**
  * @openapi
  * /checkToken:
