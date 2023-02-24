@@ -17,7 +17,6 @@ export async function getAllUserIds() {
 export async function createCommunity(userId, { name, description }) {
     await registerUserId(userId)
     const community = await registerCommunity({ name, description });
-
     if (await registerNewModerator(community.id, userId)) {
         await registerNewCommunityUser(community.id, userId);
         return true
@@ -61,8 +60,6 @@ export async function leaveFromCommunity(userId, communityId) {
     }
     ServerError.throwIf(true, 'No communities found for that user', notFound);
 }
-
-
 
 export async function deleteTheCommunity(userId, communityId) {
     if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId))
