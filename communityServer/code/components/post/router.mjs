@@ -1,32 +1,6 @@
-import { createNewCommunityPost,getAllUserIds, 
+import { createNewCommunityPost,
     getAllPostsFromAllUserCommunities, deletePost, 
      updatePostData,  } from "./service.mjs";
-
-/**
- * @openapi
- * /user/list:
- *  get:
- *    summary: "List all user IDs that are inside of at least one community"
- *    
- *    tags:
- *       - "Users"
- * 
- *    operationId: listAllCommunityUsers
- *    x-eov-operation-handler: user/router
- * 
- *    responses:
- *      '200':
- *        description: "Got all users that are inside communities"
- *      '500':
- *        description: "Internal server error"
- * 
- *    security:
- *      - {}
- */
-export async function listAllCommunityUsers(req, res, _) {
-    const users = await getAllUserIds();
-    return res.json(users);
-}
 
 /**
  * @openapi
@@ -38,7 +12,7 @@ export async function listAllCommunityUsers(req, res, _) {
  *       - "Posts"
  * 
  *    operationId: createNewPost
- *    x-eov-operation-handler: user/router
+ *    x-eov-operation-handler: post/router
  * 
  *    requestBody:
  *      description: Post data
@@ -72,7 +46,7 @@ export async function createNewPost(req, res, _) {
  *       - "Posts"
  * 
  *    operationId: getAllPosts
- *    x-eov-operation-handler: user/router
+ *    x-eov-operation-handler: post/router
  *
  *    responses:
  *      '200':
@@ -98,7 +72,7 @@ export async function getAllPosts(req, res, _) {
  *       - "Posts"
  * 
  *    operationId: deletePostFromCommunity
- *    x-eov-operation-handler: user/router
+ *    x-eov-operation-handler: post/router
  * 
  *    requestBody:
  *      description: Post and community Id
@@ -132,7 +106,7 @@ export async function deletePostFromCommunity(req, res, _) {
  *       - "Posts"
  * 
  *    operationId: updatePost
- *    x-eov-operation-handler: user/router
+ *    x-eov-operation-handler: post/router
  * 
  *    requestBody:
  *      description: Login information
