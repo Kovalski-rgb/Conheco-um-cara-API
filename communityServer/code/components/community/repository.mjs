@@ -8,6 +8,14 @@ export async function getAllCommunities() {
 	return communities;
 }
 
+export async function getAllIdsFromUsers() {
+	return await prisma.users.findMany({
+		select: {
+			id: true,
+		},
+	});
+}
+
 export async function getAllUsersFromCommunity(communityId) {
 	const users = await prisma.communities.findMany({
 		where: { id: parseInt(communityId) },
@@ -185,7 +193,6 @@ export async function updateCommunity(communityData) {
 
 export async function toggleModerator(communityId, targetId) {
 	const moderators = await getAllModeratorsFromCommunity(communityId);
-	console.log(JSON.stringify(moderators));
 	for (let i = 0; i < moderators.length; i++) {
 		if (targetId === moderators[i].usersId) {
 			return await removeModerator(communityId, targetId);

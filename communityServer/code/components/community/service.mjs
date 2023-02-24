@@ -4,10 +4,13 @@ import {
     getAllComunitiesFromUser, getAllUsersFromCommunity, registerCommunity,
     registerNewCommunityUser, registerNewModerator, registerUserId, deleteUserInsideCommunity,
     checkIfUserIsModerator, deleteCommunity, getCommunityByNameAndCode, checkIfCommunityExists,
-    updateCommunity, getAllModeratorsFromCommunity, toggleModerator
+    updateCommunity, getAllModeratorsFromCommunity, toggleModerator, getAllIdsFromUsers
 } from "./repository.mjs";
 
-/// maintain - route method OK
+export async function getAllUserIds() {
+    return await getAllIdsFromUsers();
+}
+
 export async function createCommunity(userId, { name, description }) {
     await registerUserId(userId)
     const community = await registerCommunity({ name, description });
@@ -19,22 +22,18 @@ export async function createCommunity(userId, { name, description }) {
     return false;
 }
 
-/// maintain - route method OK
 export async function listEveryUserFromCommunity(communityId) {
     return await getAllUsersFromCommunity(communityId);
 }
 
-/// maintain - route method OK
 export async function listEveryComunity() {
     return await getAllCommunities();
 }
 
-/// maintain - route method OK
 export async function listEveryComunityFromUser(id) {
     return await getAllComunitiesFromUser(id);
 }
 
-/// maintain - route method OK
 export async function enterCommunity(userId, { name, code }) {
     const community = await getCommunityByNameAndCode(name, code);
     const exist = await checkCommunityCode(community.id, code);
@@ -48,7 +47,6 @@ export async function enterCommunity(userId, { name, code }) {
     ServerError.throwIf(true, "No communities match name/code combination!", notFound);
 }
 
-/// maintain - route method OK
 export async function leaveFromCommunity(userId, communityId) {
     if (await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId)) {
         const result = await deleteUserInsideCommunity(communityId, userId);
@@ -61,7 +59,6 @@ export async function leaveFromCommunity(userId, communityId) {
     ServerError.throwIf(true, 'No communities found for that user', notFound);
 }
 
-/// maintain - route method OK
 export async function deleteTheCommunity(userId, communityId) {
     if (!await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId))
         ServerError.throwIf(true, "Community not found!", notFound);
@@ -71,14 +68,12 @@ export async function deleteTheCommunity(userId, communityId) {
     ServerError.throwIf(true, "User does not have moderator permissions!", forbidden);
 }
 
-/// maintain - route method OK
 export async function updateCommunityData(userId, communityData) {
     ServerError.throwIf(!await checkIfCommunityExists(communityData.id), "Community not found!", notFound);
     ServerError.throwIf(!await checkIfUserIsModerator(communityData.id, userId), "User does not have moderator role inside community", forbidden);
     return await updateCommunity(communityData);
 }
 
-/// maintain - route method
 export async function toggleModeratorPermission(userId, { communityId, targetId }) {
     ServerError.throwIf(!await checkIfCommunityExists(communityId), "Community not found!", notFound);
     ServerError.throwIf(!await checkIfUserIsModerator(communityId, userId), "User does not have moderator role inside community", forbidden);
