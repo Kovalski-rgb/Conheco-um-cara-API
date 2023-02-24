@@ -24,7 +24,6 @@ const SERVICE_FIELDS = {
 	createdAt: true
 }
 
-
 export async function registerUserId(id) {
 	const exists = await prisma.users.findFirst({
 		where: {
