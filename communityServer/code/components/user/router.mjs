@@ -1,4 +1,4 @@
-import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost, updateCommunityData, updatePostData } from "./service.mjs";
+import { createCommunity, createNewCommunityPost, deleteTheCommunity, enterCommunity, getAllUserIds, listEveryComunity, listEveryComunityFromUser, listEveryUserFromCommunity, leaveFromCommunity, getAllPostsFromAllUserCommunities, deletePost, updateCommunityData, updatePostData, toggleModeratorPermission } from "./service.mjs";
 
 /**
  * @openapi
@@ -51,7 +51,7 @@ export async function listAllCommunityUsers(req, res, _) {
  *      - {}
  */
 export async function listAllComunityUsers(req, res, _) {
-    const users = await listEveryUserFromCommunity(req.params.Id);
+    const users = await listEveryUserFromCommunity(req.params.id);
     return res.json(users);
 }
 
@@ -397,5 +397,39 @@ export async function deletePostFromCommunity(req, res, _) {
  */
 export async function updatePost(req, res, _) {
     const success = await updatePostData(req.user.id, req.body);
+    return success ? res.sendStatus(200) : res.sendStatus(403);
+}
+
+/**
+ * @openapi
+ * /community/moderator:
+ *  post:
+ *    summary: "Toggle moderator privileges of one user"
+ *    
+ *    tags:
+ *       - "Users"
+ * 
+ *    operationId: toggleModerator
+ *    x-eov-operation-handler: user/router
+ * 
+ *    requestBody:
+ *      description: IDs data to toggle mod permission
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/moderatorToggleTarget'
+ *
+ *    responses:
+ *      '200':
+ *        description: "Toggled moderator permission for target user"
+ *      '401':
+ *        description: "Current user does not have moderator permission"
+ * 
+ *    security:
+ *      - JWT: ['USER']
+ */
+export async function toggleModerator(req, res, _) {
+    const success = await toggleModeratorPermission(req.user.id, req.body);
     return success ? res.sendStatus(200) : res.sendStatus(403);
 }
