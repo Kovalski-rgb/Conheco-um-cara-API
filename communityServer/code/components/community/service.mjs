@@ -48,11 +48,18 @@ export async function enterCommunity(userId, { name, code }) {
 }
 
 export async function leaveFromCommunity(userId, communityId) {
+    communityId = parseInt(communityId);
     if (await checkIsUserAlreadyRegisteredInsideCommunity(communityId, userId)) {
         const result = await deleteUserInsideCommunity(communityId, userId);
         const userList = await getAllUsersFromCommunity(communityId);
         if (userList[0].users.length === 0) {
             await deleteCommunity(communityId);
+        } else {
+            const modList = await getAllModeratorsFromCommunity(communityId);
+            console.log(modList);
+            if (modList.length === 0) {
+                toggleModerator(communityId, parseInt(userList[0].users[0].id));
+            }
         }
         return result;
     }

@@ -112,7 +112,7 @@ export async function removeModerator(communityId, userId) {
 			id = moderators[i].id;
 		}
 	}
-
+	if (!id) return;
 	return await prisma.moderators.delete({
 		where: { id: id }
 	});
@@ -145,11 +145,14 @@ export async function deleteUserInsideCommunity(communityId, userId) {
 			}
 		}
 	});
-	if (success) return true
+	if (success) {
+		await removeModerator(communityId, userId);
+		return true
+	}
 	return false
 }
 
-export async function deleteCommunity(communityId) { 
+export async function deleteCommunity(communityId) {
 	await prisma.moderators.deleteMany({
 		where: { communitiesId: parseInt(communityId) }
 	});
