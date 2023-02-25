@@ -19,7 +19,6 @@ export async function createProduct(req)
     return response.data;
   }
 
-
   export async function createService(req) 
   {
     const axios = newAxios();
@@ -70,7 +69,6 @@ export async function createProduct(req)
     );
     return response.data;
   }  
-
 
   export async function listEveryProduct() {
     const axios = newAxios();
