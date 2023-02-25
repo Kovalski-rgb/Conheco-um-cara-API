@@ -6,7 +6,7 @@ import {
   deleteUser,
 } from "./service.mjs";
 import axios from "axios";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 
 /**
  * @openapi
@@ -285,42 +285,42 @@ export async function delete_user(req, res, _) {
   return userDataDelete ? res.sendStatus(200) : res.sendStatus(500);
 }
 
-/**
- * @openapi
- * /checkToken:
- *   get:
- *     summary: "Logs in the user"
- *
- *     tags:
- *       - "Authentication"
- *
- *     operationId: tokenLogin
- *     x-eov-operation-handler: user/router
- *
- *
- *     responses:
- *       '200':
- *         description: "User logged in"
- *       '400':
- *         description: "Invalid data provided"
- *       '401':
- *         description: "Login failed"
- */
-export async function tokenLogin() {
-  // Token JWT a ser verificado
-  const token =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJFdSBjb25oZWNvIHVtIGNhcmEiLCJpYXQiOjE2NzY3NTE0NjYsImV4cCI6MTY3NzYxNTQ2Niwic3ViIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiQURNSU4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInJvbGVzIjpbIkFETUlOIiwiVVNFUiJdfX0.P23C61i-RjmCNXC-u9UZp73t29mypP_5qJdUAR6x_7U";
+// /**
+//  * @openapi
+//  * /checkToken:
+//  *   get:
+//  *     summary: "Logs in the user"
+//  *
+//  *     tags:
+//  *       - "Authentication"
+//  *
+//  *     operationId: tokenLogin
+//  *     x-eov-operation-handler: user/router
+//  *
+//  *
+//  *     responses:
+//  *       '200':
+//  *         description: "User logged in"
+//  *       '400':
+//  *         description: "Invalid data provided"
+//  *       '401':
+//  *         description: "Login failed"
+//  */
+// export async function tokenLogin() {
+//   // Token JWT a ser verificado
+//   const token =
+//     "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJFdSBjb25oZWNvIHVtIGNhcmEiLCJpYXQiOjE2NzY3NTE0NjYsImV4cCI6MTY3NzYxNTQ2Niwic3ViIjoxLCJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiQURNSU4iLCJlbWFpbCI6ImFkbWluQGVtYWlsLmNvbSIsInJvbGVzIjpbIkFETUlOIiwiVVNFUiJdfX0.P23C61i-RjmCNXC-u9UZp73t29mypP_5qJdUAR6x_7U";
 
-  // Chave secreta usada para assinar o token
-  const secretKey = "dev-env";
+//   // Chave secreta usada para assinar o token
+//   const secretKey = "dev-env";
 
-  // Verificar o token JWT
-  jwt.verify(token, secretKey, (error, decodedToken) => {
-    if (error) {
-      console.error("Erro ao verificar token JWT:", error.message);
-      return;
-    }
-    console.log("Token JWT verificado com sucesso!");
-    console.log("Dados do token decodificados:", decodedToken);
-  });
-}
+//   // Verificar o token JWT
+//   jwt.verify(token, secretKey, (error, decodedToken) => {
+//     if (error) {
+//       console.error("Erro ao verificar token JWT:", error.message);
+//       return;
+//     }
+//     console.log("Token JWT verificado com sucesso!");
+//     console.log("Dados do token decodificados:", decodedToken);
+//   });
+// }
